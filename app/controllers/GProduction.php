@@ -31,6 +31,8 @@ use IR\App\Models\Production\MtaProcess as MtaProcess;
 use IR\App\Models\Production\SmtpProcess as SmtpProcess;
 use IR\App\Models\Production\AutoResponder as AutoResponder;
 use IR\App\Models\Production\Team as Team;
+
+use IR\App\Models\Admin\ServerProvider as ServerProvider;
 use IR\App\Models\Production\TeamAuthorisation as TeamAuthorisation;
 use IR\App\Models\Admin\User as User;
 use IR\App\Models\Lists\DataList as DataList;
@@ -72,6 +74,7 @@ class GProduction extends Controller
      * @once
      * @protected
      */
+  
     public function init() 
     {
         # set the current application to a local variable
@@ -124,17 +127,66 @@ class GProduction extends Controller
         $processType = isset($arguments) && count($arguments) > 0 ? $arguments[0] : null;
         $processId = isset($arguments) && count($arguments) > 1 ? $arguments[1] : null;
 
+      
+
         # set data to the page view
         $this->pageView->set([
-          "name" => "simo"
+          "name" => "send place",
         ]); 
 
         
        
-
+        $this->closeConnections();
     }
 
-    
+    public function AddServer(){
+        $this->init(); // start connection
+
+        # check for permissions 
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,__FUNCTION__);
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403);
+        } 
+
+        $serverProviders = ServerProvider::all();
+       
+
+         # set data to the page view
+         $this->pageView->set([
+            "name" => "add server",
+            "serverProviders" => $serverProviders
+            
+          ]);
+
+        $this->closeConnections(); // close connection
+    }
+
+
+    public function AddInbox(){
+        $this->init(); // start connection
+
+        # check for permissions 
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,__FUNCTION__);
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403);
+        } 
+
+         # set data to the page view
+         $this->pageView->set([
+            "name" => "add server"
+          ]);
+
+        $this->closeConnections(); // close connection
+    }
+
+    public function closeConnections() 
+    {
+        # diconnect from the database 
+        $this->app->database('system')->disconnect();
+        $this->app->database('clients')->disconnect();
+    }
 
 
  

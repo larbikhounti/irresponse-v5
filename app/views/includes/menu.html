@@ -105,8 +105,13 @@
                 
                
                     <li class="{if(isset($drops_mta_drops))}{echo 'active'}{/if} ">
-                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/production/mta-drops.html" class="nav-link "> 
-                            <span class="title"> Add new api </span>
+                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/add-server.html" class="nav-link "> 
+                            <span class="title"> Add Server </span>
+                        </a>
+                    </li>
+                    <li class="{if(isset($drops_mta_drops))}{echo 'active'}{/if} ">
+                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/add-inbox.html" class="nav-link "> 
+                            <span class="title"> Add Inbox </span>
                         </a>
                     </li>
                 
