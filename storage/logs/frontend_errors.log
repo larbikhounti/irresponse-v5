@@ -28,3 +28,7 @@
 [2024-03-15 07:15:40] iResponse Framework.CRITICAL: "SQLSTATE[42703]: Undefined column: 7 ERROR: column "gmail_server_id" does not exist LINE 1: DELETE FROM admin.gmail_servers WHERE gmail_server_id = '8' ^" in : /usr/irresponse/framework/orm/Connector.php at line : 200 [] []
 [2024-03-15 07:15:40] iResponse Framework.CRITICAL: "Undefined property: IR\App\Models\Admin\GmailServers::$_name" in : /usr/irresponse/app/models/admin/GmailServers.php at line : 360 [] []
 [2024-03-15 07:16:54] iResponse Framework.CRITICAL: "SQLSTATE[42703]: Undefined column: 7 ERROR: column "gmail_server_id" does not exist LINE 1: DELETE FROM admin.gmail_servers WHERE gmail_server_id = '8' ^" in : /usr/irresponse/framework/orm/Connector.php at line : 200 [] []
+[2024-03-15 07:25:41] iResponse Framework.CRITICAL: "Undefined property: IR\App\Models\Admin\GmailServers::$_name" in : /usr/irresponse/app/models/admin/GmailServers.php at line : 331 [] []
+[2024-03-15 07:25:56] iResponse Framework.CRITICAL: "Undefined property: IR\App\Models\Admin\GmailServers::$_name" in : /usr/irresponse/app/models/admin/GmailServers.php at line : 346 [] []
+[2024-03-15 07:26:15] iResponse Framework.CRITICAL: "Undefined property: IR\App\Models\Admin\GmailServers::$_name" in : /usr/irresponse/app/models/admin/GmailServers.php at line : 346 [] []
+[2024-03-15 07:27:21] iResponse Framework.CRITICAL: "Undefined property: IR\App\Models\Admin\GmailServers::$_name" in : /usr/irresponse/app/models/admin/GmailServers.php at line : 346 [] []

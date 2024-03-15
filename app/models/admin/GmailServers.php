@@ -328,7 +328,7 @@ class GmailServers extends ActiveRecord
         $this->_id = parent::insert();
         
         # register audit log
-        AuditLog::registerLog($this->_id,$this->_name,Objects::getInstance()->getName($this),'Insert');
+        AuditLog::registerLog($this->_id,$this->_server_name,Objects::getInstance()->getName($this),'Insert');
         
         return $this->_id;
     }
@@ -343,7 +343,7 @@ class GmailServers extends ActiveRecord
     public function update() : int
     {
         # register audit log
-        AuditLog::registerLog($this->_id,$this->_name,Objects::getInstance()->getName($this),'Update');
+        AuditLog::registerLog($this->_id,$this->_server_name,Objects::getInstance()->getName($this),'Update');
         
         return parent::update();
     }
