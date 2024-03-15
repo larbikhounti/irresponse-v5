@@ -297,6 +297,7 @@ class SmtpServers extends Controller
      */
     public function save() 
     { 
+       
         # get post data
         $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
 
@@ -366,24 +367,6 @@ class SmtpServers extends Controller
                     
                 if($result > -1)
                 {
-                    if($update == false)
-                    {
-                        $user = new SmtpUser();
-                        $user->setSmtpServerId(intval($result));
-                        $user->setStatus($this->app->utils->arrays->get($data,'status','Activated'));
-                        $user->setUsername($this->app->utils->arrays->get($data,'username'));
-                        $user->setPassword($this->app->utils->arrays->get($data,'password'));
-                        $user->setProxyIp($this->app->utils->arrays->get($data,'proxy-ip'));
-                        $user->setProxyPort(intval($this->app->utils->arrays->get($data,'proxy-port',0)));
-                        $user->setProxyUsername($this->app->utils->arrays->get($data,'proxy-username'));
-                        $user->setProxyPassword($this->app->utils->arrays->get($data,'proxy-password'));
-                        $user->setCreatedBy($username);
-                        $user->setCreatedDate(date('Y-m-d'));
-                        $user->setLastUpdatedBy($username);
-                        $user->setLastUpdatedDate(date('Y-m-d'));
-                        $user->insert();
-                    }
-
                     $flag = 'success';
                 }
             }

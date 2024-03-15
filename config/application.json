@@ -10,7 +10,7 @@
         "default_db": "system",
         "pmta_http_port": "2542",
         "upload_center_id": "",
-        "new_tab_open": "same",
+        "new_tab_open": "new",
         "webmail_server_id": "",
         "pmta_config_type": "default",
         "tracking_enc_key": "%86Xvj&fmAW4L!S7cvWuNK4W36F_VBe6_FkYX4h^ah9&9j?D6hw2E$J*!anA7Bac",
