@@ -138,7 +138,100 @@ class GProduction extends Controller
             # fetching the results to create the ajax list
             $query = $this->app->database('system')->query()->from('admin.gmail_servers s',$columns)->join('admin.servers_providers p','s.provider_id = p.id');
             
-            die(json_encode(DataTable::init($data,'admin.gmail_servers s',$columns,new GmailServers(),'gmail-servers','DESC',$query)));
+            die(json_encode(DataTable::init($data,'admin.gmail_servers s',$columns,new GmailServers(),'GProduction','DESC',$query)));
+        }
+    }
+
+     /**
+     * @name edit
+     * @description the edit action
+     * @before init
+     * @after closeConnections,checkForMessage
+     */
+    public function edit() 
+    { 
+        
+       
+        
+        $arguments = func_get_args(); 
+        $id = isset($arguments) && count($arguments) > 0 ? $arguments[0] : null;
+        $valid = true;
+        
+        # set menu status
+        $this->masterView->set([
+            'servers_management' => 'true',
+            'gmail_servers' => 'true',
+            'gmail_servers_show' => 'true'
+        ]);
+        
+        if(!isset($id) || !is_numeric($id) || intval($id) == 0)
+        {
+            $valid = false;
+        }
+        
+        $server = GmailServers::first(GmailServers::FETCH_ARRAY,['id = ?',$id]);
+        
+        if(count($server) == 0)
+        {
+            $valid = false;
+        }
+        
+        if($valid == true)
+        {
+            $columnsArray = [
+                'id',
+                'server_name',
+                'provider_name',
+                'status',
+                'client_id',
+                'client_secret',
+                'username',
+                'password',
+                'expiration_date'
+            ];
+
+            $columns = '';
+            $filters = '';
+
+            foreach ($columnsArray as $column) 
+            {
+                if($column != 'id')
+                {
+                    $columns .= '<th>' . ucwords(str_replace('_',' ',strtolower($column))) . '</th>' . PHP_EOL;
+
+                    if(strpos($column,'_date') > -1 || strpos($column,'_time') > -1)
+                    {
+                        $filters .= '<td> <div id="' . $column . '_range" class="input-group date-range-picker"> <input type="text" class="form-control form-filter" name="' . $column . '_range"> <span class="input-group-btn"> <button class="btn default date-range-toggle" type="button"> <i class="fa fa-calendar"></i> </button> </span> </div> </td>' . PHP_EOL;
+                    }
+                    else
+                    {
+                        if($column == 'status')
+                        {
+                            $filters .= '<td> <select name="status" class="form-control form-filter input-sm"> <option value="" selected>All</option> <option value="Activated">Activated</option> <option value="Inactivated">Inactivated</option> </select> </td>' . PHP_EOL;
+                        }
+                        else
+                        {
+                            $filters .= '<td><input type="text" class="form-control form-filter" name="' . $column . '"></td>' . PHP_EOL;
+                        }
+                    }
+                }
+            }
+            
+            # set data to the page view
+            $this->pageView->set([
+                'server' => $server,
+                'serversProviders' => ServerProvider::all(ServerProvider::FETCH_ARRAY,['status = ?','Activated'],['id','name']),
+                'columns' => $columns,
+                'filters' => $filters
+            ]); 
+        }
+        else
+        {
+            # stores the message in the session 
+            Page::registerMessage('error','Invalid gmail server id !');
+            
+            # redirect to lists page
+            Page::redirect();
         }
     }
     
@@ -319,7 +412,7 @@ class GProduction extends Controller
                 }
         
                 $update = true;
-                $message = 'Record updated succesfully !';
+                $message = 'Gmail Server updated succesfully !';
                 $server->setId(intval($this->app->utils->arrays->get($data,'id')));
                 $server->load();
                 $server->setLastUpdatedDate(date('Y-m-d'));
@@ -334,7 +427,7 @@ class GProduction extends Controller
                     throw new PageException('Access Denied !',403);
                 }
         
-                $message = 'Record stored succesfully !';
+                $message = 'Gmail Server stored succesfully !';
                 $server->setCreatedDate(date('Y-m-d'));
                 $server->setLastUpdatedDate(date('Y-m-d'));
             }
@@ -377,6 +470,18 @@ class GProduction extends Controller
         # diconnect from the database 
         $this->app->database('system')->disconnect();
         $this->app->database('clients')->disconnect();
+    }
+
+     /**
+     * @name checkForMessage
+     * @description checks for session messages
+     * @once
+     * @protected
+     */
+    public function checkForMessage() 
+    {
+        # check for message 
+        Page::checkForMessage($this);
     }
 
 

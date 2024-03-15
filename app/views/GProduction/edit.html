@@ -1,0 +1,82 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-dark"></i>
+                    <span class="caption-subject font-dark uppercase">Edit Gmail Server : {echo $server['server_name']}</span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form id="servers-form" action="{echo $app['base_url']}/GProduction/save.html" class="horizontal-form validate" method="POST">
+                    <input type="hidden" name="id" value="{echo $server['id']}"/>
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Server Name</label>
+                                    <input id="server-name" type="text" name="server-name" class="form-control" data-required="true" data-validation-message="Server Name is Required !" placeholder="Enter Server Name" value="{echo $server['server_name']}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">client id</label>
+                                    <input id="client_id" type="text" name="client-id" class="form-control" placeholder="Enter Host" data-required="true" data-validation-message="Server Host is Required !" value="{echo $server['client_id']}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">client secret</label>
+                                    <input id="ssh-client_secret" type="text" name="client-secret" class="form-control" placeholder="Enter Port" data-required="true" data-validation-message="Server Port is Required !" value="{echo $server['client_secret']}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">username</label>
+                                    <input id="username" type="text" name="username" class="form-control" placeholder="Enter Port" data-required="true" data-validation-message="Server Port is Required !" value="{echo $server['username']}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">password</label>
+                                    <input id="password" type="text" name="password" class="form-control" placeholder="Enter Port" data-required="true" data-validation-message="Server Port is Required !" value="{echo $server['password']}">
+                                </div>
+                            </div>
+                        
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Status</label>
+                                    <select class="form-control bs-select" title="Select a Status ..." name="status">
+                                        <option value="Activated" {if($server['status'] == 'Activated')} selected {/if} >Activated</option>
+                                        <option value="Inactivated" {if($server['status'] == 'Inactivated')} selected {/if} >Inactivated</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Server Provider</label>
+                                    <select id="provider" class="form-control bs-select" name="server-provider" data-required="true" data-validation-message="Server Provider is Required !" title="Select a Server Provider ..."> 
+                                        {if(isset($serversProviders) && count($serversProviders)>0)}
+                                            {foreach $row in $serversProviders}
+                                                <option value="{echo $row['id']}" {if($server['provider_id'] == $row['id'])} selected {/if} >{echo $row['name']}</option>
+                                            {/foreach}
+                                        {/if}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="form-actions right">
+                        <a href="javascript:;" class="btn btn-outline dark check-before-submit data-validate" data-columns="server_name" data-input-ids="server-name" data-model="GmailServers" data-row-id="{echo $server['id']}" data-package="Admin"><i class="fa fa-check"></i> Update</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+   
+</div>
