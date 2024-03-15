@@ -63,9 +63,10 @@ class DataTable
                         $object->load();
                         
                         # get class name
-                        $class = Application::getCurrent()->utils->objects->getName($object);
-                        $controller = key_exists($class,Permissions::$_MODEL_CONTOLLER_MAPPING) ? Permissions::$_MODEL_CONTOLLER_MAPPING[$class] : $controller;
-
+                        $class =  Application::getCurrent()->utils->objects->getName($object);
+                      
+                        $controller = key_exists($class,Permissions::$_MODEL_CONTOLLER_MAPPING) ? Permissions::$_MODEL_CONTOLLER_MAPPING[$class] : $class;
+                       // die(print_r($controller));
                         switch ($customActionName)
                         {
                             case 'special':
@@ -160,6 +161,7 @@ class DataTable
                             }
                             case 'delete':
                             {  
+                                  
                                 # check for permissions
                                 $method = $method == 'proxies' ? $method : 'delete';
                                 $access = Permissions::checkForAuthorization(Authentication::getAuthenticatedUser(),$controller,$method);

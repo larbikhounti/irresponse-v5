@@ -357,10 +357,10 @@ class GmailServers extends ActiveRecord
     public function delete() : int
     {
         # register audit log
-        AuditLog::registerLog($this->_id,$this->_name,Objects::getInstance()->getName($this),'Delete');
+        AuditLog::registerLog($this->_id,$this->_server_name,Objects::getInstance()->getName($this),'Delete');
         
         # delete server users if any
-        SmtpUser::deleteWhere('smtp_server_id = ?',[$this->_id]);
+        GmailServers::deleteWhere('id = ?',[$this->_id]);
                   
         # delete record 
         return parent::delete();

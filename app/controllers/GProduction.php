@@ -105,6 +105,7 @@ class GProduction extends Controller
      */
     public function get() 
     { 
+       
         $columnsArray = [
             'id',
             'server_name',
@@ -114,7 +115,7 @@ class GProduction extends Controller
             'client_secret',
             'username',
             'password',
-            'expiration_date'
+           // 'expiration_date'
         ];
         
         # get post data
@@ -403,13 +404,13 @@ class GProduction extends Controller
             # update case
             if($this->app->utils->arrays->get($data,'id') > 0)
             {
-                # check for permissions
-                $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'edit');
+                // # check for permissions
+                // $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'edit');
 
-                if($access == false)
-                {
-                    throw new PageException('Access Denied !',403);
-                }
+                // if($access == false)
+                // {
+                //     throw new PageException('Access Denied !',403);
+                // }
         
                 $update = true;
                 $message = 'Gmail Server updated succesfully !';
@@ -419,13 +420,13 @@ class GProduction extends Controller
             }
             else
             {
-                # check for permissions
-                $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'add');
+                // # check for permissions
+                // $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'add');
 
-                if($access == false)
-                {
-                    throw new PageException('Access Denied !',403);
-                }
+                // if($access == false)
+                // {
+                //     throw new PageException('Access Denied !',403);
+                // }
         
                 $message = 'Gmail Server stored succesfully !';
                 $server->setCreatedDate(date('Y-m-d'));
