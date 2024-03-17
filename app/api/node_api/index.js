@@ -10,14 +10,9 @@ let parameters = JSON.parse(Buffer.from(argv.parameters, 'base64').toString('utf
   // Base64-encode the mail and make it URL-safe 
   // (replace all "+" with "-" and all "/" with "_")
   var encodedMail = new Buffer(
-        "Content-Type: text/plain; charset=\"UTF-8\"\n" +
-        "MIME-Version: 1.0\n" +
-        "Content-Transfer-Encoding: 7bit\n" +
-        `to: ${argv.email}\n` +
-        "from: larbikhounti@gmail.com\n" +
-        "subject: test\n\n" +
+        `${parameters.parameters['headers']}` +
 
-        `${parameters.parameters.body}`
+        `${parameters.parameters['body']}`
   ).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
 
   request({

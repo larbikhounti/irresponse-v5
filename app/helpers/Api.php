@@ -106,7 +106,7 @@ class Api
                 //die(print_r($parameters));
 
                 $api = 'node  ' . API_PATH . DS . 'node_api'. DS. 'index.js';
-               die(print_r($app->utils->terminal->cmd("{$api} --parameters=$data  --email=rebiti4572@azduan.com --method={$method}"))) ;
+               die(print_r($app->utils->terminal->cmd("{$api} --parameters=$data  --email=hohisi9890@azduan.com --method={$method}"))) ;
 
 
             return ['output' => '','error' => $result];
