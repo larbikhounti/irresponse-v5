@@ -20,6 +20,7 @@ use IR\App\Helpers\Api as Api;
 
 # models
 use IR\App\Models\Admin\MtaServer as MtaServer;
+use IR\App\Models\Admin\GmailServers as GmailServers;
 use IR\App\Models\Admin\SmtpServer as SmtpServer;
 use IR\App\Models\Admin\ServerVmta as ServerVmta;
 use IR\App\Models\Admin\SmtpUser as SmtpUser;
@@ -758,6 +759,9 @@ class Production extends Base
          
         if(count($parameters))
         {
+            #send method
+            $methodSend = $this->app->utils->arrays->get($parameters,'method-send');
+            
             # drop 
             $json = json_encode($parameters);
             $type = strtolower(str_replace(' ','-',$this->app->utils->arrays->get($parameters,'type','test-all')));
@@ -798,7 +802,8 @@ class Production extends Base
             {
                 Page::printApiResults(500,'Static domain should not be empty nor [domain] !');
             }
-            
+           
+
             if(!is_array($componentsIds) || count($componentsIds) == 0)
             {
                 Page::printApiResults(500,$smtpMtaSwitch == 'mta' ? 'No vmtas found !' : 'No smtp users found !');
@@ -813,14 +818,21 @@ class Production extends Base
             
             $componentsIds = array_filter(array_unique($tmp));
             
-            $components = $smtpMtaSwitch == 'mta' ? ServerVmta::all(ServerVmta::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','mta_server_id' => 'server_id']) 
-                    : SmtpUser::all(SmtpUser::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','smtp_server_id' => 'server_id']);
+            if ($methodSend == "gmail") {
+               
+                $components =  GmailUser::all(GmailUser::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','gmail_server_id' => 'server_id']) ;
 
+            }else {
+                $components = $smtpMtaSwitch == 'mta' ? ServerVmta::all(ServerVmta::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','mta_server_id' => 'server_id']) 
+                : SmtpUser::all(SmtpUser::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','smtp_server_id' => 'server_id']);
+                
+            }
+           
             if(count($components) == 0)
             { 
                 Page::printApiResults(500,$smtpMtaSwitch == 'mta' ? 'No vmtas found !' : 'No smtp users found !');
             }
-
+            
             if(count($components) != count($componentsIds))
             {
                 Page::printApiResults(500,$smtpMtaSwitch == 'mta' ? 'Some vmtas are no longer available for you !' : 'Some smtp servers are no longer available for you !');
@@ -839,18 +851,25 @@ class Production extends Base
                 Page::printApiResults(500,'No servers selected !');
             }
             
-            $servers = $smtpMtaSwitch == 'mta' ? MtaServer::all(MtaServer::FETCH_ARRAY,['id IN ?',[$serversIds]],['id']) 
-                                                    : SmtpServer::all(SmtpServer::FETCH_ARRAY,['id IN ?',[$serversIds]],['id']);
+            if ($methodSend == "gmail") {
+                
+                $servers =  GmailServers::all(GmailServers::FETCH_ARRAY,['id IN ?',[$serversIds]],['id']) ; 
+               
+            }else {
+                $servers = $smtpMtaSwitch == 'mta' ? MtaServer::all(MtaServer::FETCH_ARRAY,['id IN ?',[$serversIds]],['id']) 
+                : SmtpServer::all(SmtpServer::FETCH_ARRAY,['id IN ?',[$serversIds]],['id']);
+            }
+           
             if(count($servers) == 0)
             {
                 Page::printApiResults(500,'No servers selected !');
             }
-
+            
             if(count($servers) != count($serversIds))
             {
                 Page::printApiResults(500,'Some mta servers are no longer available for you !');
             }
-
+            
             # recipients validation
             if(count($rcpts))
             {
@@ -876,17 +895,20 @@ class Production extends Base
                     Page::printApiResults(500,'Please check your recipients , it looks like there is some invalid emails !');
                 }
             }
-
+            
             if ($receipientsCount == 0)
             {
                 Page::printApiResults(500,'Please insert at least one recipient!');
             }
-
-            if($ispId == 0 || count(Isp::first(Isp::FETCH_ARRAY,['id = ?',$ispId],['id'])) == 0)
-            {
-                Page::printApiResults(500,'No isp selected !');
+            if('drop' == $type) {
+                if($ispId == 0 || count(Isp::first(Isp::FETCH_ARRAY,['id = ?',$ispId],['id'])) == 0)
+                {
+                    Page::printApiResults(500,'No isp selected !');
+                }
             }
-
+            
+           
+            
             # check for empty placeholders 
             $placeholders = $this->app->utils->arrays->get($parameters,'placeholders');
             $size = count($placeholders);
@@ -971,63 +993,75 @@ class Production extends Base
                     Page::printApiResults(500,'Some data lists are no longer available for you !');
                 }
             }
-                        
-            # save the process into the database 
-            $process = $smtpMtaSwitch == 'mta' ? new MtaProcess() : new SmtpProcess();
-            $process->setContent(base64_encode($json));
-            $process->setServersIds($this->app->utils->arrays->implode($serversIds));
-            $process->setProcessType($type);
-            $process->setStatus('In Progress');
-            $process->setStartTime(date('Y-m-d H:i:s'));
-            $process->setUserId(Authentication::getAuthenticatedUser()->getId());
-            $process->setTotalEmails($dataActualCount);
-            $process->setProgress(0);
-            $process->setAffiliateNetworkId($affiliateNetworkId);
-            $process->setOfferId($offerId);
-            $process->setIspId($ispId);
-            
-            # negative case
-            if($negativeFile != '')
-            {
-                $process->setNegativeFilePath(STORAGE_PATH . DS . 'negatives' . DS . $negativeFile);
-            }
-            
-            $process->setAutoRespondersIds($autoRespondersIds);
-
-            if($type == 'drop')
-            {
-                $process->setDataStart($dataStart);
-                $process->setDataCount($dataCount);
-                $process->setLists($this->app->utils->arrays->implode($listsIds));
-            }
-
-            $processId = 0;
-            
-            try 
-            {
-                $processId = $process->insert();
-            } 
-            catch (Exception $e) 
-            {
-                $e = new SystemException($e->getMessage(),500,$e);
-                $e->logError();
+            if ($methodSend != "gmail") {
+                # save the process into the database 
+                $process = $smtpMtaSwitch == 'mta' ? new MtaProcess() : new SmtpProcess();
+                $process->setContent(base64_encode($json));
+                $process->setServersIds($this->app->utils->arrays->implode($serversIds));
+                $process->setProcessType($type);
+                $process->setStatus('In Progress');
+                $process->setStartTime(date('Y-m-d H:i:s'));
+                $process->setUserId(Authentication::getAuthenticatedUser()->getId());
+                $process->setTotalEmails($dataActualCount);
+                $process->setProgress(0);
+                $process->setAffiliateNetworkId($affiliateNetworkId);
+                $process->setOfferId($offerId);
+                $process->setIspId($ispId);
                 
-                Page::printApiResults(500,'Could not save process information !');
-            }
+                # negative case
+                if($negativeFile != '')
+                {
+                    $process->setNegativeFilePath(STORAGE_PATH . DS . 'negatives' . DS . $negativeFile);
+                }
+                
+                $process->setAutoRespondersIds($autoRespondersIds);
 
-            if($processId == 0)
-            {
-                Page::printApiResults(500,'Could not save process information !');
+                if($type == 'drop')
+                {
+                    $process->setDataStart($dataStart);
+                    $process->setDataCount($dataCount);
+                    $process->setLists($this->app->utils->arrays->implode($listsIds));
+                }
+
+                $processId = 0;
+                
+                try 
+                {
+                    $processId = $process->insert();
+                } 
+                catch (Exception $e) 
+                {
+                    $e = new SystemException($e->getMessage(),500,$e);
+                    $e->logError();
+                    
+                    Page::printApiResults(500,'Could not save process information !');
+                }
+
+                if($processId == 0)
+                {
+                    Page::printApiResults(500,'Could not save process information !');
+                }
             }
+          
 
             $controller = $smtpMtaSwitch == 'mta' ? 'MtaProcesses' : 'SmtpProcesses';
             $action = $type == 'drop' ? 'proceedDrop' : 'proceedTest';
             
-            # register audit log
-            AuditLog::registerLog($processId,$controller,'Production Process',ucfirst($action));
-                
-            # call iresponse api
-            Api::call($controller,$action,['process-id' => $processId],true);
+           
+
+            if ($methodSend == "gmail") {
+                # call iresponse api
+               $apiResult =  Api::call($methodSend,$controller,$action,['process-id' => 0],true);
+                // if (count($apiResult['error'] > 0)) {
+                //     Page::printApiResults(500,'check if nodeJs is installed');
+                // }
+            }else {
+                 # register audit log
+                AuditLog::registerLog($processId,$controller,'Production Process',ucfirst($action));
+                # call iresponse api
+                Api::call($controller,$action,['process-id' => $processId],true);
+            }
+           
             
             Page::printApiResults(200,'Your process has been started !');
         }
