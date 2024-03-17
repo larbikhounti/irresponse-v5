@@ -74,6 +74,20 @@
                             </a>
                         </li>
                     {/if}
+                    {if(IR\App\Helpers\Permissions::isMenuiTemAuthorized($connectedUser,'show-mta-drops') == true)}
+                    <li class="{if(isset($drops_gmail_drops))}{echo 'active'}{/if} ">
+                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/gmail-drops.html" class="nav-link "> 
+                            <span class="title"> Gmail Drops Monitor </span>
+                        </a>
+                    </li>
+                    {/if}
+                    {if(IR\App\Helpers\Permissions::isMenuiTemAuthorized($connectedUser,'show-mta-drops') == true)}
+                    <li class="{if(isset($drops_gmail_tests))}{echo 'active'}{/if} ">
+                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/gmail-tests.html" class="nav-link "> 
+                            <span class="title"> Gmail Tests Monitor </span>
+                        </a>
+                    </li>
+                     {/if}
                     {if(IR\App\Helpers\Permissions::isMenuiTemAuthorized($connectedUser,'upload-images') == true)}
                         <li class="{if(isset($upload_images))}{echo 'active'}{/if} ">
                             <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/production/upload-images.html" class="nav-link "> 

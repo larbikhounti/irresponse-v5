@@ -29,6 +29,8 @@ use IR\App\Models\Lists\DataProvider as DataProvider;
 use IR\App\Models\Affiliate\Vertical as Vertical;
 use IR\App\Models\Production\MtaProcess as MtaProcess;
 use IR\App\Models\Production\SmtpProcess as SmtpProcess;
+use IR\App\Models\Production\GmailProcess as GmailProcess;
+
 use IR\App\Models\Production\AutoResponder as AutoResponder;
 use IR\App\Models\Production\Team as Team;
 
@@ -139,6 +141,219 @@ class GProduction extends Controller
             $query = $this->app->database('system')->query()->from('admin.gmail_servers s',$columns)->join('admin.servers_providers p','s.provider_id = p.id');
             
             die(json_encode(DataTable::init($data,'admin.gmail_servers s',$columns,new GmailServers(),'GProduction','DESC',$query)));
+        }
+    }
+
+
+     /**
+     * @name mtaTests
+     * @description the mta tests action
+     * @before init
+     * @after closeConnections,checkForMessage
+     */
+    public function gmailTests() 
+    { 
+        # check for permissions
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,__FUNCTION__);
+
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403);
+        }
+
+        # set menu status
+        $this->masterView->set([
+            'production' => 'true',
+            'drops_gmail_tests' => 'true'
+        ]);
+        
+        # get isps 
+        $isps = Isp::all(Isp::FETCH_ARRAY,['status = ?','Activated'],['id','name'],'name','ASC');
+        
+        # preparing the columns array to create the list
+        $columnsArray = [
+            'id',
+            'start_time',
+            'mailer',
+            'isp_name' => 'isp',
+            'servers',
+            'offer',
+            'status',
+            'total',
+            'progress',
+            'delivered',
+            'bounced',
+            'opens',
+            'clicks',
+            'leads',
+            'unsubs'
+        ];
+        
+        $columnsSizes = [
+            'start_time' => ' style="width:2%" ',
+            'mailer' => ' style="width:7%" ',
+            'servers' => ' style="width:9%" ',
+            'isp' => ' style="width: 5.5%" ',
+            'offer' => ' style="width:10%" ',
+            'status' => ' style="width:3%" ',
+            'start' => ' style="width:0.5%" ',
+            'total' => ' style="width:0.5%" ',
+            'progress' => ' style="width:0.5%" ',
+            'delivered' => ' style="width:0.5%" ',
+            'bounced' => ' style="width:0.5%" ',
+            'opens' => ' style="width:0.5%" ',
+            'leads' => ' style="width:0.5%" ',
+            'clicks' => ' style="width:0.5%" ',
+            'unsubs' => ' style="width:0.5%" '
+        ];
+        
+        # creating the html part of the list 
+        $index = 1;
+        $columns = '';
+        $filters = '';
+        $footer = '<th class="ft_' . $index . '"></th>';
+     
+        foreach ($columnsArray as $column) 
+        {
+            $footer .= '<th class="ft_' . $index . '"></th>'; $index++;
+            
+            if($column != 'id')
+            {
+                $size = key_exists($column,$columnsSizes) ? $columnsSizes[$column] : '';
+                
+                $columns .= '<th>' . ucwords(str_replace('_',' ',strtolower($column))) . '</th>' . PHP_EOL;
+                
+                if(strpos($column,'_date') > -1 || strpos($column,'_time') > -1)
+                {
+                    $filters .= '<td ' . $size . '> <div id="' . $column . '_range" class="input-group date-range-picker"> <input type="text" class="form-control form-filter" name="' . $column . '_range"> <span class="input-group-btn"> <button class="btn default date-range-toggle" type="button"> <i class="fa fa-calendar"></i> </button> </span> </div> </td>' . PHP_EOL;
+                }
+                else if($column == 'status')
+                {
+                    $filters .= '<td ' . $size . '> <select name="status" class="form-control form-filter input-sm"> <option value="" selected>All</option> <option value="In Progress">In Progress</option> <option value="Completed">Completed</option> <option value="Paused">Paused</option> <option value="Error">Error</option> <option value="Interrupted">Interrupted</option> </select> </td>' . PHP_EOL;
+                }
+                else if($column == 'isp')
+                {
+                    $filters .= '<td ' . $size . '> <select name="isp" class="form-control form-filter input-sm"><option value="" selected>All</option>';
+                    
+                    foreach ($isps as $isp) 
+                    {
+                        $filters .= "<option value='{$isp['name']}' selected>{$isp['name']}</option>";
+                    }
+                    
+                    $filters .= '</select> </td>' . PHP_EOL;
+                }
+                else if($column == 'offer')
+                {
+                    $filters .= '<td ' . $size . '><input type="text" class="form-control form-filter" name="' . $column . '"></td>' . PHP_EOL;
+                }
+                else
+                {
+                    $filters .= '<td ' . $size . '><input type="text" class="form-control form-filter" name="' . $column . '"></td>' . PHP_EOL;
+                }
+            }
+        }
+        
+        $footer .= '<th class="ft_' . $index . '"></th>';
+            
+        # set data to the page view
+        $this->pageView->set([
+            'columns' => $columns,
+            'filters' => $filters,
+            'footer' => $footer
+        ]);
+    }
+
+
+     /**
+     * @name getMtaTests
+     * @description the get mta tests action
+     * @before init
+     * @after closeConnections,checkForMessage
+     */
+    public function getGmailTests()
+    { 
+        # check for permissions
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'mtaTests');
+
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403); 
+        }
+        
+        
+        # get post data
+        $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
+        
+        if(count($data))
+        {
+            
+            # preparing the columns array to create the list
+            $columns = [
+                't.id' => 'id',
+                "to_char(start_time, 'YYYY-MM-DD HH24:MI')" => 'start_time',
+                "u.first_name || ' ' || u.last_name" => 'mailer',
+                'i.name' => 'isp',
+                "'<button style=\"margin-top:-7px\" class=\"btn btn-sm blue-madison show-process-servers\" data-type=\"mt\" title=\"Show Process Servers\" data-id=\"' || t.id || '\"><i class=\"fa fa-globe\"></i></button>' || substring(replace((SELECT string_agg(server_name, ',') FROM admin.gmail_servers s WHERE s.id = ANY (string_to_array(t.servers_ids,',')::int[])),',',' '),1,18)" => 'servers',
+                "'(' || off.production_id || ') ' || off.name" => 'offer',
+                't.status' => 'status',
+                'COALESCE(t.total_emails,0)' => 'total',
+                'COALESCE(t.progress,0)' => 'progress',
+                'COALESCE(t.delivered,0)' => 'delivered',
+                'COALESCE(t.hard_bounced,0)' => 'bounced',
+                "(SELECT COUNT(1) FROM actions.opens op WHERE op.process_id = t.id)" => 'opens',
+                "(SELECT COUNT(1) FROM actions.clicks cl WHERE cl.process_id = t.id)" => 'clicks',
+                "(SELECT COUNT(1) FROM actions.leads ld WHERE ld.process_id = t.id)" => 'leads',
+                "(SELECT COUNT(1) FROM actions.unsubscribes un WHERE un.process_id = t.id)" => 'unsubs'
+            ];
+            
+            
+            # prepare query 
+            $query = $this->app->database('system')->query()->from('production.gmail_processes t',$columns)
+                    ->join('admin.users u','t.user_id = u.id')
+                    ->join('admin.isps i','t.isp_id = i.id')
+                    ->join('affiliate.offers off','t.offer_id = off.id')
+                    ->where("t.process_type NOT LIKE 'drop'",[]);
+                   
+            # fetching the results to create the ajax list
+            if(Authentication::getAuthenticatedUser()->getMasterAccess() != 'Enabled')
+            {
+                
+                $userTeams = [];
+                $authorisations = TeamAuthorisation::all(TeamAuthorisation::FETCH_ARRAY,['team_member_id = ?',Authentication::getAuthenticatedUser()->getId()],['team_id']);
+
+                foreach ($authorisations as $authorisation) 
+                {
+                    $userTeams[] = $authorisation['team_id'];
+                }
+                
+                if(count($userTeams) != 0)
+                {
+                    # check if the user is a team leader 
+                    $userIds = [Authentication::getAuthenticatedUser()->getId()];
+                    $teams = Team::all(Team::FETCH_ARRAY,["status = ? and " . $userIds[0] . " = ANY (string_to_array(team_leaders_ids,',')::int[])",['Activated']],['id','name']);
+
+
+                    if(count($teams))
+                    {
+                        foreach ($teams as $team) 
+                        {
+                            $members = TeamAuthorisation::all(TeamAuthorisation::FETCH_ARRAY,['team_member_id > 0 AND team_id = ?',$team['id']],['id','team_id','team_member_id']);
+
+                            if(count($members))
+                            {
+                                foreach ($members as $member) 
+                                {
+                                    $userIds[] = intval($member['team_member_id']);
+                                }
+                            }
+                        }
+                    }
+
+                    $query->where('t.user_id in ?',[$userIds]);
+                }
+            }
+        
+            die(json_encode(DataTable::init($data,'production.gmail_processes t',$columns,new GmailProcess(),'GProduction' . RDS . 'gmail-tests','DESC',$query,false)));
         }
     }
 

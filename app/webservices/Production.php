@@ -35,6 +35,7 @@ use IR\App\Models\Affiliate\Link as Link;
 use IR\App\Models\Lists\DataList as DataList;
 use IR\App\Models\Production\MtaProcess as MtaProcess;
 use IR\App\Models\Production\SmtpProcess as SmtpProcess;
+use IR\App\Models\Production\GmailProcess as GmailProcess;
 use IR\App\Models\Production\AutoResponder as AutoResponder;
 
 # orm 
@@ -1009,7 +1010,21 @@ class Production extends Base
                 $process->setAffiliateNetworkId($affiliateNetworkId);
                 $process->setOfferId($offerId);
                 $process->setIspId($ispId);
-                
+            }else {
+                 # save the process into the database 
+                 $process =  new GmailProcess();
+                 $process->setContent(base64_encode($json));
+                 $process->setServersIds($this->app->utils->arrays->implode($serversIds));
+                 $process->setProcessType($type);
+                 $process->setStatus('In Progress');
+                 $process->setStartTime(date('Y-m-d H:i:s'));
+                 $process->setUserId(Authentication::getAuthenticatedUser()->getId());
+                 $process->setTotalEmails($dataActualCount);
+                 $process->setProgress(0);
+                 $process->setAffiliateNetworkId($affiliateNetworkId);
+                 $process->setOfferId($offerId);
+                 $process->setIspId($ispId);
+            }  
                 # negative case
                 if($negativeFile != '')
                 {
@@ -1043,7 +1058,7 @@ class Production extends Base
                 {
                     Page::printApiResults(500,'Could not save process information !');
                 }
-            }
+            
           
 
             $controller = $smtpMtaSwitch == 'mta' ? 'MtaProcesses' : 'SmtpProcesses';

@@ -606,7 +606,7 @@ class Production extends Controller
                 }
             }
             
-            die(json_encode(DataTable::init($data,'production.mta_processes t',$columns,new MtaProcess(),'production' . RDS . 'mta-tests','DESC',$query,false)));
+            die(json_encode(DataTable::init($data,'production.gmail_processes t',$columns,new GmailProcess(),'GProduction' . RDS . 'gmail-tests','DESC',$query,false)));
         }
     }
 

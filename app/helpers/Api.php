@@ -96,7 +96,7 @@ class Api
                 'endpoint' => $controller,
                 'action' => $method,
                 'parameters' => $parameters
-            ],JSON_UNESCAPED_UNICODE));
+                ],JSON_UNESCAPED_UNICODE));
                 $result = $app->utils->terminal->cmd('node -v');
             
                 if(count($result['error']) == 0)
@@ -106,7 +106,7 @@ class Api
                 //die(print_r($parameters));
 
                 $api = 'node  ' . API_PATH . DS . 'node_api'. DS. 'index.js';
-               die(print_r($app->utils->terminal->cmd("{$api} --parameters=$data  --email=hohisi9890@azduan.com --method={$method}"))) ;
+                die(print_r($app->utils->terminal->cmd("{$api} --data=$data"))) ;
 
 
             return ['output' => '','error' => $result];
