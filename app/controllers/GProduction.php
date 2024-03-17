@@ -16,9 +16,8 @@ use IR\Mvc\Controller as Controller;
 # models
 use IR\App\Models\Admin\MtaServer as MtaServer;
 use IR\App\Models\Admin\ServerVmta as ServerVmta;
-use IR\App\Models\Admin\SmtpServer as SmtpServer;
-use IR\App\Models\Admin\SmtpUser as SmtpUser;
 use IR\App\Models\Admin\GmailServers as GmailServers;
+use IR\App\Models\Admin\GmailUser as GmailUser;
 use IR\App\Models\Admin\ManagementServer as ManagementServer;
 use IR\App\Models\Affiliate\AffiliateNetwork as AffiliateNetwork;
 use IR\App\Models\Affiliate\Offer as Offer;
@@ -483,6 +482,203 @@ class GProduction extends Controller
     {
         # check for message 
         Page::checkForMessage($this);
+    }
+
+     /**
+     * @name users
+     * @description the users action
+     * @before init
+     * @after closeConnections
+     */
+    public function users() 
+    {
+        # check for permissions
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'edit');
+
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403);
+        }
+        
+        # set menu status
+        $this->masterView->set([
+            'servers_management' => 'true',
+            'gmail_servers' => 'true',
+            'gmail_servers_show' => 'true'
+        ]);
+        
+        $arguments = func_get_args();
+        $page = isset($arguments) && count($arguments) ? $arguments[0] : '';
+  
+        if(isset($page) && $page != '')
+        {
+            switch ($page)
+            {
+                case 'add' :
+                {
+                    $id = isset($arguments) && count($arguments) > 1 ? intval($arguments[1]) : 0;
+                    $this->pageView->setFile(VIEWS_PATH . DS . 'GProduction' . DS . 'users' . DS . 'add.' . DEFAULT_EXTENSION);
+                    
+                    # set data to the page view
+                    $this->pageView->set([
+                        'server' => GmailServers::first(GmailUser::FETCH_ARRAY,['id = ?',$id])
+                    ]);
+                    
+                    # check for message 
+                    Page::checkForMessage($this);
+                    break;
+                }
+                case 'edit' :
+                {
+                    $id = isset($arguments) && count($arguments) > 1 ? intval($arguments[1]) : 0;
+                    $user = GmailUser::first(GmailUser::FETCH_ARRAY,['id = ?',$id]); 
+                    
+                    if(count($user) == 0)
+                    {
+                        # stores the message in the session 
+                        Page::registerMessage('error','Invalid gmail user Id !');
+
+                        # redirect to lists page
+                        Page::redirect();
+                    }
+                    else
+                    {
+                        # set data to the page view
+                        $this->pageView->set([
+                            'user' => $user,
+                            'server' => GmailServers::first(GmailServers::FETCH_ARRAY,['id = ?',$user['gmail_server_id']])
+                        ]);
+                    }
+
+                    $this->pageView->setFile(VIEWS_PATH . DS . 'GProduction' . DS . 'users' . DS . 'edit.' . DEFAULT_EXTENSION);
+                    
+                    # check for message 
+                    Page::checkForMessage($this);
+                    break;
+                }
+                case 'save' :
+                {
+                    # get post data
+                    $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
+
+                    $message = 'Internal server error !';
+                    $flag = 'error';
+                    
+                    if(count($data))
+                    {        
+                        $update = false;
+                        
+                        $username = Authentication::getAuthenticatedUser()->getEmail();
+                        $server = GmailServers::first(GmailServers::FETCH_ARRAY,['id = ?',intval($this->app->utils->arrays->get($data,'server-id'))],['id','name']);
+
+                        if(count($server))
+                        {
+                            # update case
+                            if($this->app->utils->arrays->get($data,'id') > 0)
+                            {
+                                $update = true;
+                                $message = 'Record updated succesfully !';
+                                $user = new GmailUser();
+                                $user->setId(intval($this->app->utils->arrays->get($data,'id')));
+                                $user->load();
+                                $user->setGmailServerId($this->app->utils->arrays->get($server,'id'));
+                                $user->setGmailServerName($this->app->utils->arrays->get($server,'name'));
+                                $user->setEmail($this->app->utils->arrays->get($data,'email'));
+                                $user->setPassword($this->app->utils->arrays->get($data,'password'));
+                                $user->setAccessToken(intval($this->app->utils->arrays->get($data,'access-token')));
+                                $user->setRecovery($this->app->utils->arrays->get($data,'recovery'));
+                                $user->setStatus($this->app->utils->arrays->get($data,'status','Activated'));
+                                $user->setLastUpdatedBy($username);
+                                $user->setLastUpdatedDate(date('Y-m-d'));
+                                $userid = $user->update();
+                                
+                                if($userid > -1)
+                                {
+                                    $flag = 'success';
+                                }
+                            }
+                            else
+                            {
+                                $users = explode(PHP_EOL,$this->app->utils->arrays->get($data,'users'));
+                                $usersObjects = [];
+                                
+                                if(count($users))
+                                {
+                                    foreach ($users as $line) 
+                                    {
+                                        if($this->app->utils->strings->indexOf($line,' ') != -1)
+                                        {
+                                            $lineParts = explode(' ',$line);
+                                            
+                                            if(count($lineParts) > 1)
+                                            {
+                                                $user = new GmailUser();
+                                                $user->setGmailServerId($this->app->utils->arrays->get($server,'id'));
+                                                $user->setGmailServerName($this->app->utils->arrays->get($server,'name'));
+                                                $user->setEmail($this->app->utils->arrays->first($lineParts));
+                                                $user->setPassword($this->app->utils->arrays->get($lineParts,1));
+                                                $user->setRecovery($this->app->utils->arrays->get($lineParts,2));
+                                                $user->setAccessToken($this->app->utils->arrays->get($lineParts,3));                                       
+                                                $user->setStatus('Activated');
+                                                $user->setCreatedBy($username);
+                                                $user->setCreatedDate(date('Y-m-d'));
+                                                $user->setLastUpdatedBy($username);
+                                                $user->setLastUpdatedDate(date('Y-m-d'));
+                                                $usersObjects[] = $user;
+                                            }
+                                        }
+                                    }
+                                    
+                                    if(count($usersObjects))
+                                    {
+                                        $ids = GmailUser::insertRows($usersObjects,GmailUser::OBJECTS_ROWS);
+                                        
+                                        if(count($ids))
+                                        {
+                                            $flag = 'success';
+                                            $message = 'Record(s) stored succesfully !';  
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    # stores the message in the session 
+                    Page::registerMessage($flag, $message);
+
+                    # redirect to lists page
+                    Page::redirect();
+                    break;
+                }
+                case 'get' : 
+                {
+                    # get post data
+                    $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
+
+                    if(count($data))
+                    {
+                        $serverId = isset($arguments) && count($arguments) ? intval($arguments[1]) : 0;
+                        
+                        $columns = [
+                            'id',
+                            'email',
+                            'password',
+                            'status',
+                            'recovery',
+                            'access_token',
+                            'created_by',
+                            'created_date'
+                        ];
+                        
+                        $query = $this->app->database('system')->query()->from('admin.gmail_users',$columns)->where('gmail_server_id = ?',$serverId);
+                        die(json_encode(DataTable::init($data,'admin.gmail_users',$columns,new GmailUser(),'gmail-servers' . RDS . 'users','DESC',$query)));
+                    }
+                    
+                    break;
+                }
+            }
+        }
     }
 
 

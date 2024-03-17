@@ -1,0 +1,54 @@
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="icon-list font-grey-mint"></i>
+            <span class="caption-subject font-grey-mint uppercase">Edit User For <span class="bold">{echo $server['email']}</span></span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="servers-form" action="{echo $app['base_url']}/GProduction/users/save.html" class="horizontal-form validate" method="POST">
+            <input type="hidden" name="server-id" value="{echo $server['id']}"/>
+            <input type="hidden" name="id" value="{echo $user['id']}"/>
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Email</label>
+                            <input id="username" type="text" name="email" class="form-control" placeholder="Enter email" value="{echo $user['email']}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Password</label>
+                            <input id="password" type="text" name="password" class="form-control" placeholder="Enter password" value="{echo $user['password']}">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label class="control-label">Status</label>
+                            <select class="form-control bs-select" title="Select a Status ..." name="status">
+                                <option value="Activated" {if($user['status'] == 'Activated')} selected {/if} >Activated</option>
+                                <option value="Inactivated" {if($user['status'] == 'Inactivated')} selected {/if} >Inactivated</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">access token</label>
+                            <input id="proxy-ip" type="text" name="access-token" class="form-control" placeholder="Enter access token" value="{echo $user['access_token']}">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label class="control-label">recovery</label>
+                            <input id="proxy-port" type="text" name="recovery" class="form-control" placeholder="Enter recovery" value="{echo $user['recovery']}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions right">
+                <button type="submit" class="btn grey-mint submit-loading"><i class="fa fa-check"></i> Save</button>
+            </div>
+        </form>
+    </div>
+</div>

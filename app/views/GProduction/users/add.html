@@ -1,0 +1,26 @@
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="icon-list font-grey-mint"></i>
+            <span class="caption-subject font-grey-mint uppercase">Add New Gmail Users To <span class="bold">{echo $server['server_name']}</span></span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="servers-form" action="{echo $app['base_url']}/GProduction/users/save.html" class="horizontal-form validate" method="POST">
+            <input type="hidden" name="server-id" value="{echo $server['id']}"/>
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">email password recovery access_token</label>
+                            <textarea id="users-names" name="emails" class="form-control" rows="20"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions right">
+                <button type="submit" class="btn grey-mint submit-loading"><i class="fa fa-check"></i> Save</button>
+            </div>
+        </form>
+    </div>
+</div>
