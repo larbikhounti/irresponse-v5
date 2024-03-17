@@ -1318,7 +1318,7 @@ var SendProcess = function()
             var serverIds = $(this).val();
             var ispId = $('#isps').val();
             var vmtasType = $('#vmta-send-type').val();
-            
+            var sendMethod = $('#send-method').val();
             $('#available-vmtas').html("");
             $('#selected-vmtas').html("");
             $('#available-vmtas').change();
@@ -1339,7 +1339,8 @@ var SendProcess = function()
                 {
                     'server-ids' : serverIds,
                     'isp-id' : ispId,
-                    'vmtas-type' : vmtasType
+                    'vmtas-type' : vmtasType,
+                    'send-method' : sendMethod == "gmail"? sendMethod : null
                 }
             };
 

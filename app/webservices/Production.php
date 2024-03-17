@@ -133,11 +133,12 @@ class Production extends Base
         $serverIds = $this->app->utils->arrays->get($parameters,'server-ids');
         $vmtasType = $this->app->utils->arrays->get($parameters,'vmtas-type');
         $ispId = intval($this->app->utils->arrays->get($parameters,'isp-id'));
-        
+        $sendMethod = $this->app->utils->arrays->get($parameters,'send-method');
+     
         if(count($serverIds) > 0)
         {
             $vmtas = [];
-            if ($ispId != "") {
+            if ($ispId != "" && is_null($sendMethod)) {
               
                 switch ($vmtasType)
                     {
@@ -1051,8 +1052,8 @@ class Production extends Base
            
 
             if ($methodSend == "gmail") {
-                # call iresponse api
-               $apiResult =  Api::call($parameters,$methodSend,$controller,$action,['process-id' => 0],true);
+                # call iresponse nodeJs api
+               $apiResult =  Api::callGmail($methodSend,$parameters,$methodSend,$controller,$action,['process-id' => 0],true);
                 // if (count($apiResult['error'] > 0)) {
                 //     Page::printApiResults(500,'check if nodeJs is installed');
                 // }
