@@ -23,3 +23,6 @@
 [2024-03-17 08:31:11] iResponse Framework.CRITICAL: "Return value of IR\App\Helpers\Api::call() must be of the type array, none returned" in : /usr/irresponse/app/helpers/Api.php at line : 95 [] []
 [2024-03-17 08:31:36] iResponse Framework.CRITICAL: "Return value of IR\App\Helpers\Api::call() must be of the type array, none returned" in : /usr/irresponse/app/helpers/Api.php at line : 95 [] []
 [2024-03-17 08:33:50] iResponse Framework.CRITICAL: "Return value of IR\App\Helpers\Api::call() must be of the type array, none returned" in : /usr/irresponse/app/helpers/Api.php at line : 95 [] []
+[2024-03-17 08:49:46] iResponse Framework.CRITICAL: "Argument 3 passed to IR\App\Helpers\Api::call() must be of the type string, array given, called in /usr/irresponse/app/controllers/DataLists.php on line 628" in : /usr/irresponse/app/helpers/Api.php at line : 28 [] []
+[2024-03-17 08:50:40] iResponse Framework.CRITICAL: "Argument 3 passed to IR\App\Helpers\Api::call() must be of the type string, array given, called in /usr/irresponse/app/controllers/DataLists.php on line 628" in : /usr/irresponse/app/helpers/Api.php at line : 28 [] []
+[2024-03-17 09:16:21] iResponse Framework.CRITICAL: "Return value of IR\App\Helpers\Api::call() must be of the type array, none returned" in : /usr/irresponse/app/helpers/Api.php at line : 97 [] []

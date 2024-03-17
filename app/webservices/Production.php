@@ -764,6 +764,7 @@ class Production extends Base
             
             # drop 
             $json = json_encode($parameters);
+            
             $type = strtolower(str_replace(' ','-',$this->app->utils->arrays->get($parameters,'type','test-all')));
             $smtpMtaSwitch = $this->app->utils->arrays->get($parameters,'smtp-mta-type','mta');
 
@@ -1051,7 +1052,7 @@ class Production extends Base
 
             if ($methodSend == "gmail") {
                 # call iresponse api
-               $apiResult =  Api::call($methodSend,$controller,$action,['process-id' => 0],true);
+               $apiResult =  Api::call($parameters,$methodSend,$controller,$action,['process-id' => 0],true);
                 // if (count($apiResult['error'] > 0)) {
                 //     Page::printApiResults(500,'check if nodeJs is installed');
                 // }

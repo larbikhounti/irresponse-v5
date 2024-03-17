@@ -25,20 +25,22 @@ class Api
      * @access public
      * @return array
      */ 
-    public static function call(string $sendMethod = null,string $controller,string $method,array $parameters = [],bool $nohup = false,$logFile = '',$userId = 0) : array
+    public static function call(array $fullParameters = [],string $sendMethod = null,string $controller,string $method,array $parameters = [],bool $nohup = false,$logFile = '',$userId = 0) : array
     {
         # set the current application to a local variable
         $app = Application::getCurrent();
 
             if ($sendMethod == "gmail") {
-                $result = $app->utils->terminal->cmd('pp -v');
+                $result = $app->utils->terminal->cmd('node -v');
             
                 if(count($result['error']) == 0)
                 {
                     return ['output' => '','error' => $result['error']];
                 }
-              // die(print_r($result));
-            //return ['output' => '','error' => $result];
+
+                $api = 'node  ' . API_PATH . DS . 'node_api'. DS. 'index.js';
+                $app->utils->terminal->cmd("{$api}");
+            return ['output' => '','error' => $result];
         }else {
             $result = $app->utils->terminal->cmd('java -version');
         
