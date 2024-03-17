@@ -441,7 +441,7 @@ class GProduction extends Controller
             }
             else
             {
-               // die($this->app->utils->arrays->get($data,'password'));
+               
                 $server->setServerName($this->app->utils->arrays->get($data,'server-name'));
                 $server->setStatus($this->app->utils->arrays->get($data,'server-status','Activated'));
                 $server->setProviderId(intval($this->app->utils->arrays->get($provider,'id')));
@@ -602,7 +602,7 @@ class GProduction extends Controller
                             {
                                 
                                 $users = explode(PHP_EOL,$this->app->utils->arrays->get($data,'emails'));
-
+                                
                                 $usersObjects = [];
                                 
                                 if(count($users))
@@ -614,13 +614,15 @@ class GProduction extends Controller
                                         if($this->app->utils->strings->indexOf($line,' ') != -1)
                                         {
                                             
-                                            $lineParts = explode('|',$line);
+                                            $lineParts = explode(' ',$line);
                                             
                                             if(count($lineParts) > 1)
                                             {
-                                               
+                                               // die(print_r(new GmailUser()));
                                                 $user = new GmailUser();
+                                                
                                                 $user->setGmailServerId($this->app->utils->arrays->get($server,'id'));
+                                                
                                                 $user->setGmailServerName($this->app->utils->arrays->get($server,'name'));
                                                 
                                                 $user->setEmail($this->app->utils->arrays->get($lineParts,0));
