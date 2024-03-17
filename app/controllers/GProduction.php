@@ -180,15 +180,15 @@ class GProduction extends Controller
         {
             $columnsArray = [
                 'id',
-                'server_name',
-                'provider_name',
-                'status',
-                'client_id',
-                'client_secret',
-                'username',
+                'email',
                 'password',
-                'expiration_date'
+                'status',
+                'recovery',
+                'access_token',
+                'created_by',
+                'created_date'
             ];
+          
 
             $columns = '';
             $filters = '';
@@ -543,6 +543,7 @@ class GProduction extends Controller
                     }
                     else
                     {
+                        //die(print_r($user));
                         # set data to the page view
                         $this->pageView->set([
                             'user' => $user,
@@ -569,7 +570,7 @@ class GProduction extends Controller
                         $update = false;
                         
                         $username = Authentication::getAuthenticatedUser()->getEmail();
-                        $server = GmailServers::first(GmailServers::FETCH_ARRAY,['id = ?',intval($this->app->utils->arrays->get($data,'server-id'))],['id','name']);
+                        $server = GmailServers::first(GmailServers::FETCH_ARRAY,['id = ?',intval($this->app->utils->arrays->get($data,'server-id'))],['id','server_name']);
 
                         if(count($server))
                         {
@@ -582,7 +583,7 @@ class GProduction extends Controller
                                 $user->setId(intval($this->app->utils->arrays->get($data,'id')));
                                 $user->load();
                                 $user->setGmailServerId($this->app->utils->arrays->get($server,'id'));
-                                $user->setGmailServerName($this->app->utils->arrays->get($server,'name'));
+                                $user->setGmailServerName($this->app->utils->arrays->get($server,'server_name'));
                                 $user->setEmail($this->app->utils->arrays->get($data,'email'));
                                 $user->setPassword($this->app->utils->arrays->get($data,'password'));
                                 $user->setAccessToken(intval($this->app->utils->arrays->get($data,'access-token')));
@@ -599,23 +600,30 @@ class GProduction extends Controller
                             }
                             else
                             {
-                                $users = explode(PHP_EOL,$this->app->utils->arrays->get($data,'users'));
+                                
+                                $users = explode(PHP_EOL,$this->app->utils->arrays->get($data,'emails'));
+
                                 $usersObjects = [];
                                 
                                 if(count($users))
                                 {
+                                    
                                     foreach ($users as $line) 
                                     {
+                                        
                                         if($this->app->utils->strings->indexOf($line,' ') != -1)
                                         {
-                                            $lineParts = explode(' ',$line);
+                                            
+                                            $lineParts = explode('|',$line);
                                             
                                             if(count($lineParts) > 1)
                                             {
+                                               
                                                 $user = new GmailUser();
                                                 $user->setGmailServerId($this->app->utils->arrays->get($server,'id'));
                                                 $user->setGmailServerName($this->app->utils->arrays->get($server,'name'));
-                                                $user->setEmail($this->app->utils->arrays->first($lineParts));
+                                                
+                                                $user->setEmail($this->app->utils->arrays->get($lineParts,0));
                                                 $user->setPassword($this->app->utils->arrays->get($lineParts,1));
                                                 $user->setRecovery($this->app->utils->arrays->get($lineParts,2));
                                                 $user->setAccessToken($this->app->utils->arrays->get($lineParts,3));                                       
@@ -655,10 +663,10 @@ class GProduction extends Controller
                 {
                     # get post data
                     $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
-
                     if(count($data))
                     {
                         $serverId = isset($arguments) && count($arguments) ? intval($arguments[1]) : 0;
+                        
                         
                         $columns = [
                             'id',
@@ -672,7 +680,7 @@ class GProduction extends Controller
                         ];
                         
                         $query = $this->app->database('system')->query()->from('admin.gmail_users',$columns)->where('gmail_server_id = ?',$serverId);
-                        die(json_encode(DataTable::init($data,'admin.gmail_users',$columns,new GmailUser(),'gmail-servers' . RDS . 'users','DESC',$query)));
+                        die(json_encode(DataTable::init($data,'admin.gmail_users',$columns,new GmailUser(),'GProduction' . RDS . 'users','DESC',$query)));
                     }
                     
                     break;

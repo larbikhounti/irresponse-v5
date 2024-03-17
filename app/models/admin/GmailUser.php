@@ -84,7 +84,7 @@ class GmailUser extends ActiveRecord
      * @nullable false
      * @length 100
      */
-    protected $_username;
+    protected $_email;
 
     /**
      * @column
