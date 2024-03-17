@@ -1,17 +1,23 @@
 var request = require('request');
-let token = "ya29.a0Ad52N38lejAK3Y6yWiwTkobgoRf0sgVvCWldwBjMWt7v093VWVNkSwP-g6QBHvqjJXzAkdqNjctlZHwJOyK-XWrHHwGYD0xcfD6tQlnUrqMhmTHZv5p7ACXZXGoeFcGY5WG_xcbefr0dxUokxgfQzNb6cUBqF6omwMSNaCgYKAacSARESFQHGX2MiI289fjMKdgXrTkLdwLOffw0171"
+const yargs = require('yargs/yargs')
+const { hideBin } = require('yargs/helpers')
+const argv = yargs(hideBin(process.argv)).parse()
 
+let token = "ya29.a0Ad52N38sAVEAjU0XhU5pvxpi2CWZciWiEY3QGjjEOA7EOy8KZqSGRNLPoPlj9uA3vRbcFXRELbHONqzVvGLmK5Nqq2cLNfUC4bZ8wWl2bsqBIyoNWcx7CNqyhB7KBEgrRB44GYJFuKD76zcUB5y8kHqsCpG4oTmbDzy7aCgYKAU8SARESFQHGX2MileWUSkeMF-sJ07a-2q0QTw0171"
+
+let parameters = JSON.parse(Buffer.from(argv.parameters, 'base64').toString('utf-8')) 
+  
   // Base64-encode the mail and make it URL-safe 
   // (replace all "+" with "-" and all "/" with "_")
   var encodedMail = new Buffer(
         "Content-Type: text/plain; charset=\"UTF-8\"\n" +
         "MIME-Version: 1.0\n" +
         "Content-Transfer-Encoding: 7bit\n" +
-        "to: howin34374@azduan.com\n" +
+        `to: ${argv.email}\n` +
         "from: larbikhounti@gmail.com\n" +
         "subject: test\n\n" +
 
-        "this is a test for api"
+        `${parameters.parameters.body}`
   ).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
 
   request({
@@ -28,7 +34,9 @@ let token = "ya29.a0Ad52N38lejAK3Y6yWiwTkobgoRf0sgVvCWldwBjMWt7v093VWVNkSwP-g6QB
     function(err, response, body) {
       if(err){
         console.log(err); // Failure
+     
       } else {
         console.log(body); // Success!
+      
       }
     });

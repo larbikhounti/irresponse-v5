@@ -9,6 +9,8 @@
   "author": "mohamed khounti",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.88.2"
+    "log4js": "^6.9.1",
+    "request": "^2.88.2",
+    "yargs": "^17.7.2"
   }
 }
