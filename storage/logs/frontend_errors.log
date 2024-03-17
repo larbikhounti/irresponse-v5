@@ -5,3 +5,4 @@
 [2024-03-17 03:58:28] iResponse Framework.CRITICAL: "Undefined index: server_name" in : /usr/irresponse/framework/templating/Template.php(49) : runtime-created function at line : 25 [] []
 [2024-03-17 03:58:30] iResponse Framework.CRITICAL: "Undefined index: server_name" in : /usr/irresponse/framework/templating/Template.php(49) : runtime-created function at line : 25 [] []
 [2024-03-17 03:58:45] iResponse Framework.CRITICAL: "SQLSTATE[23502]: Not null violation: 7 ERROR: null value in column "gmail_server_name" of relation "gmail_users" violates not-null constraint DETAIL: Failing row contains (1, 10, null, Activated, Email, Password, h1@live.fi, h1@live.fi, 2024-03-17, 2024-03-17, 0, Recovery)." in : /usr/irresponse/framework/orm/Connector.php at line : 200 [] []
+[2024-03-17 04:03:05] iResponse Framework.CRITICAL: "setAccessTokenintval : Method is not implemented in IR\App\Models\Admin\GmailUser !" in : /usr/irresponse/framework/core/Base.php at line : 143 [] []

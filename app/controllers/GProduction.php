@@ -586,7 +586,7 @@ class GProduction extends Controller
                                 $user->setGmailServerName($this->app->utils->arrays->get($server,'server_name'));
                                 $user->setEmail($this->app->utils->arrays->get($data,'email'));
                                 $user->setPassword($this->app->utils->arrays->get($data,'password'));
-                                $user->setAccessTokenintval($this->app->utils->arrays->get($data,'access-token'));
+                                $user->setAccessToken($this->app->utils->arrays->get($data,'access-token'));
                                 $user->setRecovery($this->app->utils->arrays->get($data,'recovery'));
                                 $user->setStatus($this->app->utils->arrays->get($data,'status','Activated'));
                                 $user->setLastUpdatedBy($username);
