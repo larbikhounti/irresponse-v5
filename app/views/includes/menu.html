@@ -39,6 +39,13 @@
                             </a>
                         </li>
                     {/if}
+                    {if(IR\App\Helpers\Permissions::isMenuiTemAuthorized($connectedUser,'send-mta-drops') == true)}
+                    <li class="{if(isset($drops_mta_send))}{echo 'active'}{/if} ">
+                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/production/gmail-send-process.html" class="nav-link "> 
+                            <span class="title">Gmail Send Page </span>
+                        </a>
+                    </li>
+                {/if}
                     {if(IR\App\Helpers\Permissions::isMenuiTemAuthorized($connectedUser,'show-mta-drops') == true)}
                         <li class="{if(isset($drops_mta_drops))}{echo 'active'}{/if} ">
                             <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/production/mta-drops.html" class="nav-link "> 

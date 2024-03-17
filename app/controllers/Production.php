@@ -15,6 +15,7 @@ use IR\Mvc\Controller as Controller;
 
 # models
 use IR\App\Models\Admin\MtaServer as MtaServer;
+use IR\App\Models\Admin\GmailServers as GmailServers;
 use IR\App\Models\Admin\ServerVmta as ServerVmta;
 use IR\App\Models\Admin\SmtpServer as SmtpServer;
 use IR\App\Models\Admin\SmtpUser as SmtpUser;
@@ -134,6 +135,49 @@ class Production extends Controller
         # set data to the page view
         $this->pageView->set([
             'servers' => MtaServer::all(MtaServer::FETCH_ARRAY,['status = ? AND is_installed = ?',['Activated','t']],['id','name','main_ip'],'naturalsort(name)','ASC'),
+            'autoResponders' => AutoResponder::all(AutoResponder::FETCH_ARRAY,['status = ?',['Activated']],['id','name']),
+            'affiliateNetworks' => AffiliateNetwork::all(AffiliateNetwork::FETCH_ARRAY,['status = ?','Activated'],['id','name']),
+            'headers' => Header::all(Header::FETCH_ARRAY,['created_by = ?',$this->authenticatedUser->getEmail()],['id','name','header'],'naturalsort(name)','ASC'),
+            'mtaHeader' => $this->app->utils->fileSystem->readFile(ASSETS_PATH . DS . 'templates' . DS . 'production' . DS . 'mta_header.tpl'),
+            'smtpHeader' => $this->app->utils->fileSystem->readFile(ASSETS_PATH . DS . 'templates' . DS . 'production' . DS . 'smtp_header.tpl'),
+            'isps' => Isp::all(Isp::FETCH_ARRAY,['status = ?','Activated'],['id','name'],'name','ASC'),
+            'dataProviders' => DataProvider::all(DataProvider::FETCH_ARRAY,['status = ?','Activated'],['id','name']),
+            'verticals' => Vertical::all(Vertical::FETCH_ARRAY,['status = ?','Activated'],['id','name']),
+            'processId' => $processId,
+            'processType' => $processType
+        ]); 
+    }
+
+       /**
+     * @name sendProcess
+     * @description the sendProcess action
+     * @before init
+     * @after closeConnections,checkForMessage
+     */
+    public function GmailSendProcess() 
+    { 
+     
+        # check for permissions 
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,__FUNCTION__);
+
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403);
+        } 
+
+        # set menu status
+        $this->masterView->set([
+            'production' => 'true',
+            'drops_mta_send' => 'true'
+        ]);
+        
+        $arguments = func_get_args(); 
+        $processType = isset($arguments) && count($arguments) > 0 ? $arguments[0] : null;
+        $processId = isset($arguments) && count($arguments) > 1 ? $arguments[1] : null;
+
+        # set data to the page view
+        $this->pageView->set([
+            'servers' => GmailServers::all(GmailServers::FETCH_ARRAY,['status = ?',['Activated']],['id','server_name'],'naturalsort(server_name)','ASC'),
             'autoResponders' => AutoResponder::all(AutoResponder::FETCH_ARRAY,['status = ?',['Activated']],['id','name']),
             'affiliateNetworks' => AffiliateNetwork::all(AffiliateNetwork::FETCH_ARRAY,['status = ?','Activated'],['id','name']),
             'headers' => Header::all(Header::FETCH_ARRAY,['created_by = ?',$this->authenticatedUser->getEmail()],['id','name','header'],'naturalsort(name)','ASC'),

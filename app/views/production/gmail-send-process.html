@@ -21,7 +21,7 @@
                             <div class="col-md-2" style="width: 16%;">
                                 <div class="form-group"> 
                                     <label class="control-label full-width">
-                                        Servers 
+                                       Gmail Servers 
                                         <span class="options-sum" style="margin-left: 5px;float:right;">( 0 Selected )</span><br/>
                                         <a class="pull-right tooltips refresh-servers" data-container="body" data-placement="top" data-original-title="Refresh servers" href="javascript:;" style="margin-left: 15px;color :#525e64;"><i class="fa fa-refresh"></i></a>
                                         <a class="pull-right tooltips copy-selected-servers" data-container="body" data-placement="top" data-original-title="Copy selected servers" href="javascript:;" style="margin-left: 15px;color :#525e64;"><i class="fa fa-copy"></i></a>
@@ -31,7 +31,7 @@
                                     <select id="servers" class="form-control servers-selection select-actions" multiple="multiple" name="servers[]"  style="height: 271px !important;">
                                         {if(isset($servers) && count($servers)>0)}
                                             {foreach $row in $servers}
-                                                <option value="{echo $row['id']}" data-main-ip="{echo $row['main_ip']}">{echo $row['name']}</option>
+                                                <option value="{echo $row['id']}" >{echo $row['server_name']}</option>
                                             {/foreach}
                                         {/if}
                                     </select>
@@ -42,7 +42,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group"> 
                                             <label class="control-label full-width"> 
-                                                <span class="available-vmta-user-label" style="float:left;">Available Vmtas</span>
+                                                <span class="available-vmta-user-label" style="float:left;">Available Inboxes</span>
                                                 <span class="options-sum" style="margin-left: 5px;float:right;">( 0 Selected )</span><br/>
                                                 <a class="pull-right tooltips move-selected-ips" data-from="available-vmtas" data-to="selected-vmtas" data-container="body" data-placement="top" data-original-title="Move selected ips"  href="javascript:;" style="margin-left: 15px;color :#525e64;"><i class="fa fa-arrow-right"></i></a>
                                                 <a class="pull-right tooltips copy-selected-rdns" data-target="available-vmtas" data-container="body" data-placement="top" data-original-title="Copy selected rdns" href="javascript:;" style="margin-left: 15px;color :#525e64;"><i class="fa fa-copy"></i></a>
@@ -61,7 +61,7 @@
                             <div class="col-md-4" style="width: 32%;">
                                 <div class="form-group"> 
                                     <label class="control-label full-width">
-                                        <span class="selected-vmta-user-label" style="float:left;">Selected Vmtas</span>
+                                        <span class="selected-vmta-user-label" style="float:left;">Selected Inboxes</span>
                                         <span class="options-sum" style="margin-left: 5px;float:right;">( 0 Selected )</span><br/>
                                         <a class="pull-right tooltips copy-selected-rdns" data-target="selected-vmtas" data-container="body" data-placement="top" data-original-title="Copy selected rdns" href="javascript:;" style="margin-left: 15px;color :#525e64;"><i class="fa fa-copy"></i></a>
                                         <a class="pull-right tooltips copy-selected-ips" data-target="selected-vmtas" data-container="body" data-placement="top" data-original-title="Copy selected ips" href="javascript:;" style="margin-left: 15px;color :#525e64;"><i class="fa fa-copy"></i></a>
@@ -74,7 +74,7 @@
                                     <select id="selected-vmtas" class="form-control vmtas-selection select-actions" multiple="multiple" name="selected-vmtas[]"  style="height: 228px !important;overflow-x: scroll">  
                                     </select>
                                 </div>
-                                <div class="row">
+                                <!-- <div class="row">
                                     <div class="col-md-8">
                                         <div class="form-group"> 
                                             <select id="vmta-send-type" name="vmta-send-type" class="form-control bs-select"> 
@@ -90,10 +90,10 @@
                                             <input id="vmta-rotation" type="text" title="Vmtas Rotation" class="form-control input-number" name="vmta-rotation" value="1">
                                         </div>
                                     </div>  
-                                </div>
+                                </div> -->
                             </div>
                             <div class="col-md-3" style="width: 20%;">
-                                <div class="row">
+                                <!-- <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group"> 
                                             <label class="control-label full-width">
@@ -103,8 +103,8 @@
                                             <textarea id="filter-select-text" class="form-control" style="height: 244px !important;" spellcheck="false"></textarea>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
+                                </div> -->
+                                <!-- <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group"> 
                                             <select id="filter-select-type" class="form-control bs-select"> 
@@ -120,7 +120,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

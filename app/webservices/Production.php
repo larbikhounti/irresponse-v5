@@ -23,6 +23,7 @@ use IR\App\Models\Admin\MtaServer as MtaServer;
 use IR\App\Models\Admin\SmtpServer as SmtpServer;
 use IR\App\Models\Admin\ServerVmta as ServerVmta;
 use IR\App\Models\Admin\SmtpUser as SmtpUser;
+use IR\App\Models\Admin\GmailUser as GmailUser;
 use IR\App\Models\Admin\Isp as Isp;
 use IR\App\Models\Affiliate\AffiliateNetwork as AffiliateNetwork;
 use IR\App\Models\Affiliate\Offer as Offer;
@@ -90,6 +91,7 @@ class Production extends Base
         }
         
         $type = $this->app->utils->arrays->get($parameters,'type');
+        //die($type);
         $servers = $type == 'mta' ? MtaServer::all(MtaServer::FETCH_ARRAY,['status = ? AND is_installed = ?',['Activated','t']],['id','name','main_ip','provider_name'],'naturalsort(name)','ASC') 
                    : SmtpServer::all(SmtpServer::FETCH_ARRAY,['status = ?',['Activated']],['id','name'],'naturalsort(name)','ASC');
             
@@ -134,46 +136,58 @@ class Production extends Base
         if(count($serverIds) > 0)
         {
             $vmtas = [];
-            
-            switch ($vmtasType)
-            {
-                case 'default-vmtas':
-                {
-                    $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ? AND type = ?',['Activated',$serverIds,'Default']],
-                    ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
-                    break;
-                }
-                case 'smtp-vmtas':
-                {
-                    $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ? AND type = ?',['Activated',$serverIds,'SMTP']],
-                    ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
-                    break;
-                }
-                case 'merged-vmtas':
-                case 'custom-vmtas':
-                {
-                    if($ispId > 0)
+            if ($ispId != "") {
+              
+                switch ($vmtasType)
                     {
-                        $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ? AND type = ? AND isp_id = ?',['Activated',$serverIds,'Custom',$ispId]],
-                        ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
+                        case 'default-vmtas':
+                        {
+                            $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ? AND type = ?',['Activated',$serverIds,'Default']],
+                            ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
+                            break;
+                        }
+                        case 'smtp-vmtas':
+                        {
+                            $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ? AND type = ?',['Activated',$serverIds,'SMTP']],
+                            ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
+                            break;
+                        }
+                        case 'merged-vmtas':
+                        case 'custom-vmtas':
+                        {
+                            if($ispId > 0)
+                            {
+                                $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ? AND type = ? AND isp_id = ?',['Activated',$serverIds,'Custom',$ispId]],
+                                ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
+                            }
+                            
+                            break;
+                        }
+                        case 'all-vmtas':
+                        {
+                            $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ?',['Activated',$serverIds]],
+                            ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
+                            break;
+                        }
                     }
                     
-                    break;
-                }
-                case 'all-vmtas':
-                {
-                    $vmtas = ServerVmta::all(ServerVmta::FETCH_ARRAY,['status = ? and mta_server_id in ?',['Activated',$serverIds]],
-                    ['id','mta_server_id','mta_server_name','type','ip','domain','custom_domain']);
-                    break;
-                }
+                    if(count($vmtas) == 0)
+                    {
+                        Page::printApiResults(500,'No vmtas found !');
+                    }
+            
+            }else {
+                $gmailUsers = GmailUser::all(GmailUser::FETCH_ARRAY,['status = ? and gmail_server_id in ?',['Activated',$serverIds]],
+                ['id','gmail_server_id','gmail_server_name','email']);
+               // die(print_r($gmailUsers));
+                
+                if(count($gmailUsers) == 0)
+                    {
+                        Page::printApiResults(500,'No Inbox found !');
+                    } 
             }
             
-            if(count($vmtas) == 0)
-            {
-                Page::printApiResults(500,'No vmtas found !');
-            }
-            
-            Page::printApiResults(200,'',['vmtas' => $vmtas]);
+            Page::printApiResults(200,'',['vmtas' => $gmailUsers, 'type' => "gmail"]);
         }
         else
         {

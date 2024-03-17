@@ -1353,12 +1353,14 @@ var SendProcess = function()
                 {
                     if(result != false)
                     {
+                        console.log('result')
                         var status = result['status'];
 
                         if(status == 200)
                         {
                             if($('#smtp-mta-switcher').bootstrapSwitch('state') == false)
                             {
+                                
                                 var smtpUsers = result['data']['smtp-users'];
 
                                 for (var i in smtpUsers) 
@@ -1368,14 +1370,25 @@ var SendProcess = function()
                             }
                             else
                             {
-                                var vmtas = result['data']['vmtas'];
-                            
-                                for (var i in vmtas) 
-                                {
-                                    var star = vmtas[i]['type'] != 'Default' ? '*' : ''; 
-                                    var domain = vmtas[i]['type'] != 'Default' ? vmtas[i]['custom_domain'] : vmtas[i]['domain'];
-                                    $('#available-vmtas').append("<option value='" + vmtas[i]['mta_server_id'] + "|" + vmtas[i]['id'] + "' data-server-id='" + vmtas[i]['mta_server_id'] + "' data-rdns='" + vmtas[i]['domain'] + "' data-ip='" + vmtas[i]['ip'] + "'>(" + vmtas[i]['mta_server_name'] + ") " + vmtas[i]['ip'] + " (" + domain + ") " + star + "</option>");
+                                if (result['data']['type'] == "gmail") {
+                                    console.log('gmail')
+                                    var gmailUser = result['data']['vmtas'];
+                                    for (var i in gmailUser) 
+                                    {
+                                        $('#available-vmtas').append("<option value='" + gmailUser[i]['gmail_server_id'] + "|" + gmailUser[i]['id'] + "' data-server-id='" + gmailUser[i]['gmail_server_id'] + "'> " + gmailUser[i]['email'] + "</option>");
+                                    }
+                                }else{
+                                    console.log('vmpta')
+                                    var vmtas = result['data']['vmtas'];
+                                
+                                    for (var i in vmtas) 
+                                    {
+                                        var star = vmtas[i]['type'] != 'Default' ? '*' : ''; 
+                                        var domain = vmtas[i]['type'] != 'Default' ? vmtas[i]['custom_domain'] : vmtas[i]['domain'];
+                                        $('#available-vmtas').append("<option value='" + vmtas[i]['mta_server_id'] + "|" + vmtas[i]['id'] + "' data-server-id='" + vmtas[i]['mta_server_id'] + "' data-rdns='" + vmtas[i]['domain'] + "' data-ip='" + vmtas[i]['ip'] + "'>(" + vmtas[i]['mta_server_name'] + ") " + vmtas[i]['ip'] + " (" + domain + ") " + star + "</option>");
+                                    }
                                 }
+                              
                             }
 
                             $('#available-vmtas option').each(function(){
