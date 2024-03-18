@@ -62,6 +62,11 @@ const replaceTo = (header,to) =>{
         return JSON.parse(JSON.stringify(header).replace(emailRegex, to));
 }
 
+const replaceSender = (header,sender) =>{
+    const senderRegex = /\[sender\]/g;
+    return JSON.parse(JSON.stringify(header).replace(senderRegex, sender));
+}
+
 // Function to replace tags in text with corresponding random tags
 const replaceTagsWithRandom = (header) => {
     const HeaderAsString = JSON.stringify(header)
@@ -97,7 +102,8 @@ module.exports = {
     decodeData,
     extractAccountIds,
     replaceTo,
-    replaceTagsWithRandom
+    replaceTagsWithRandom,
+    replaceSender
   };
 
    
