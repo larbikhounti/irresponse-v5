@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "log4js": "^6.9.1",
+    "pg": "^8.11.3",
     "request": "^2.88.2",
     "yargs": "^17.7.2"
   }

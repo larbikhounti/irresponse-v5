@@ -85,7 +85,7 @@ class Api
     
     }
 
-    public static function callGmail(string $sendMethod = null,array $parameters = [],string $controller,string $method) : array
+    public static function callGmail(string $sendMethod = null,string $controller,string $method,array $parameters = []) : array
     {
         # set the current application to a local variable
         $app = Application::getCurrent();

@@ -1067,8 +1067,9 @@ class Production extends Base
            
 
             if ($methodSend == "gmail") {
+                
                 # call iresponse nodeJs api
-               $apiResult =  Api::callGmail($methodSend,$parameters,$controller,$action);
+               $apiResult =  Api::callGmail($methodSend,$controller,$action,$parameters);
                 // if (count($apiResult['error'] > 0)) {
                 //     Page::printApiResults(500,'check if nodeJs is installed');
                 // }

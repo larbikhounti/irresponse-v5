@@ -163,7 +163,7 @@ class GProduction extends Controller
 
         # set menu status
         $this->masterView->set([
-            'production' => 'true',
+            'Production' => 'true',
             'drops_gmail_tests' => 'true'
         ]);
         

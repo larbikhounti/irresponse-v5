@@ -1312,7 +1312,7 @@ class GProduction extends Base
         }
         
         # check users roles 
-        Authentication::checkUserRoles();
+       Authentication::checkUserRoles();
         
         # check for permissions
         $type = $this->app->utils->arrays->get($parameters,'type');
@@ -1321,10 +1321,7 @@ class GProduction extends Base
         
         switch ($type)
         {
-            case 'mt' : $method = 'mtaTests'; break;
-            case 'md' : $method = 'mtaDrops'; break; 
-            case 'st' : $method = 'smtpTests'; break; 
-            case 'sd' : $method = 'smtpDrops'; break; 
+            case 'gt' : $method = 'gmailTests'; break;
         }
 
         $access = $method != '' && Permissions::checkForAuthorization(Authentication::getAuthenticatedUser(),'Production',$method);
@@ -1342,7 +1339,7 @@ class GProduction extends Base
         }
         
         # call iresponse api
-        $result = Api::call('Production','executeProcessAction',$parameters);
+        $result = Api::callGmail('gmail','GProduction','executeProcessAction',$parameters);
 
         if(count($result) == 0)
         {

@@ -2339,7 +2339,7 @@ var SendProcess = function()
             {
                 var data = 
                 { 
-                    'controller' : 'Production',
+                    'controller' : type == 'gt'? 'GProduction' : 'Production',
                     'action' : 'executeProcessAction',
                     'parameters' : 
                     {

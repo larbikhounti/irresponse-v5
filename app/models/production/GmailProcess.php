@@ -295,7 +295,7 @@ class GmailProcess extends ActiveRecord
         AuditLog::registerLog($this->_id,"GmailProcess {$this->_id}",Objects::getInstance()->getName($this),'Delete');
         
         # stop process if still in progress
-        Api::call('Production','executeProcessAction',['processes-ids' => [$this->_id],'action' => 'stop','type' => 'gmail']); 
+        Api::callGmail('GProduction','executeProcessAction',['processes-ids' => [$this->_id],'action' => 'stop','type' => 'gmail']); 
         
         return parent::delete();
     }
