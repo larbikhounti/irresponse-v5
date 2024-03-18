@@ -9,7 +9,8 @@ const {
     getDbConfig,
     getRecipients,
     extractAccountIds,
-    replaceTo
+    replaceTo,
+    replaceTagsWithRandom
 } = require('./helpers/utils')
 
 const mailHandler = async (data) => {
@@ -29,14 +30,13 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
-   
    let headers = [];
     const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
    //let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
 
     const testRecipientsList = getRecipients(data.parameters.rcpts);
     testRecipientsList.forEach(recipient => {
-       headers.push(replaceTo(data.parameters['headers'],recipient))
+       headers.push(replaceTagsWithRandom(data.parameters['headers']))
         // result.data.rows.forEach(token => {
         //     // manuplate body and header before sending a test
         //     sendMail(header, body, token)

@@ -1,4 +1,5 @@
-
+// Import the random tag functions
+const { uniqueRandomTagFunctions, randomTagFunctions } = require('./randomGenerator');
 const systemFunctions = [
     'proceedTest',
     'executeProcessAction',
@@ -56,12 +57,37 @@ const extractAccountIds = (inputArray) => {
     return accountIds;
 }
 
-const replaceTo = (headers,to) =>{
+const replaceTo = (header,to) =>{
         const emailRegex = /\[email\]/g;
-         const newHeader = JSON.parse(JSON.stringify(headers).replace(emailRegex, to));
-    return newHeader
+        return JSON.parse(JSON.stringify(header).replace(emailRegex, to));
 }
 
+// Function to replace tags in text with corresponding random tags
+const replaceTagsWithRandom = (header) => {
+    const HeaderAsString = JSON.stringify(header)
+    // Regular expression to match tags like [a_7], [n_5], etc. ending with "_some-number]"
+    const tagRegex = /\[([a-zA-Z]+_\d+)]/g;
+
+    // Replace each tag found in the text
+    return JSON.parse(HeaderAsString.replace(tagRegex, (match, tag) => {
+        // Extract length from tag
+        const length = parseInt(tag.split('_')[1]);
+        const tagType = tag.split('_')[0]
+
+        // Get corresponding random tag
+        let randomTag;
+        if (uniqueRandomTagFunctions[tagType]) {
+            randomTag = uniqueRandomTagFunctions[tagType](length);
+        } else if (randomTagFunctions[tagType]) {
+            randomTag = randomTagFunctions[tagType](length);
+        } else {
+            // If tag is not recognized, return the original match
+            return match;
+        }
+        // Return the random tag to replace the original tag in the text
+        return randomTag;
+    }));
+};
 
 module.exports = {
     getDbType,
@@ -70,7 +96,8 @@ module.exports = {
     getRecipients,
     decodeData,
     extractAccountIds,
-    replaceTo
+    replaceTo,
+    replaceTagsWithRandom
   };
 
    
