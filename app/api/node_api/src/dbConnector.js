@@ -1,23 +1,15 @@
-const {getDbConfig} = require('./helpers/utils')
 const Pool = require('pg').Pool
 
 
  const connect = async (config,query) =>{
   let result = {success : true};
-      //  return  new Client({
-      //       host: config.host,
-      //       database: config.database,
-      //       user: config.username,
-      //       password: config.password,
-      //       port: config.port,
-      //     })
       try {
         const pool = new Pool({
-          host: "localhost",
-          database: "ir_system",
-          user: "admin",
-          password: "admin123",
-          port: 5432,
+          host: config.host,
+          database: config.database,
+          user:config.username ,
+          password: config.password,
+          port: config.port,
       });
 
       const client = await pool.connect();
@@ -33,7 +25,7 @@ const Pool = require('pg').Pool
 
     } catch (error) {
       result.success = false
-      return result;
+      result.error = error
     }
 
     return result

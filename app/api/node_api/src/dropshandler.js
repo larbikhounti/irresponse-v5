@@ -1,5 +1,5 @@
 const {connect} = require('./dbConnector')
-const {getDbType, getDbConfig} = require('./helpers/utils')
+const {getDbType, getDbConfig, ArrayToInt} = require('./helpers/utils')
 
 
 
@@ -7,12 +7,27 @@ const {getDbType, getDbConfig} = require('./helpers/utils')
 // find the drop by id 
 // do the action
 const handleProcess =  async (data) => {
-   const result = await connect("d","SELECT NOW()");
-    // Call the function and handle the result
+    let result;
+    switch (data.parameters['action']) {
+        case 'stop':
+             result = await connect(getDbConfig(getDbType(data)),stopProcess(data));
+            break;
+    
+        default:
+            break;
+    }
    return result
     
     }
 
+const stopProcess = (data) =>{
+ const  arrayOfIntegers = ArrayToInt(data.parameters['processes-ids'])
+ const query = {
+    text: "UPDATE production.gmail_processes SET status = 'stopped' WHERE id IN ($1);" ,
+    values: arrayOfIntegers,
+  }
+  return query;
+}
 
 module.exports = {
     handleProcess

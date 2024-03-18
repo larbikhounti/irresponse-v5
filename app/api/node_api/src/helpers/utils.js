@@ -30,9 +30,15 @@ const getDbType = (data) => {
     }
 }
 
+const ArrayToInt = (arrayOfStrings) =>{
+    const arrayOfIntegers = arrayOfStrings.map(str => parseInt(str));
+    return arrayOfIntegers;
+}
+
 module.exports = {
     getDbType,
-    getDbConfig
+    getDbConfig,
+    ArrayToInt
   };
 
    
