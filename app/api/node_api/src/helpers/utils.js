@@ -56,6 +56,12 @@ const extractAccountIds = (inputArray) => {
     return accountIds;
 }
 
+const replaceTo = (headers,to) =>{
+        const emailRegex = /\[email\]/g;
+         const newHeader = JSON.parse(JSON.stringify(headers).replace(emailRegex, to));
+    return newHeader
+}
+
 
 module.exports = {
     getDbType,
@@ -63,7 +69,8 @@ module.exports = {
     ArrayToInt,
     getRecipients,
     decodeData,
-    extractAccountIds
+    extractAccountIds,
+    replaceTo
   };
 
    

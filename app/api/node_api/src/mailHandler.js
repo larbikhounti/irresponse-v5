@@ -8,7 +8,8 @@ const {
     getDbType,
     getDbConfig,
     getRecipients,
-    extractAccountIds
+    extractAccountIds,
+    replaceTo
 } = require('./helpers/utils')
 
 const mailHandler = async (data) => {
@@ -28,6 +29,7 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
+    return replaceTo(data.parameters['headers'],'test@test.com')
    // let tokens = [];
     const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
    let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
