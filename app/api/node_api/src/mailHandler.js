@@ -29,19 +29,21 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
-    return replaceTo(data.parameters['headers'],'test@test.com')
-   // let tokens = [];
+   
+   let headers = [];
     const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
-   let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
+   //let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
 
-    const testRecipientsList = getRecipients(decodedData.parameters.rcpts);
+    const testRecipientsList = getRecipients(data.parameters.rcpts);
     testRecipientsList.forEach(recipient => {
-        result.data.rows.forEach(token => {
-            // manuplate body and header before sending a test
-            sendMail(header, body, token)
-        });
-       
+       headers.push(replaceTo(data.parameters['headers'],recipient))
+        // result.data.rows.forEach(token => {
+        //     // manuplate body and header before sending a test
+        //     sendMail(header, body, token)
+        // });
+        
     });
+    return headers;
     // result = await connect(getDbConfig(getDbType(data)), stopProcess(data));
 }
 
