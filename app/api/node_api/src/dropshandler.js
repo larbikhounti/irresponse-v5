@@ -4,9 +4,8 @@ const {getDbType, getDbConfig, ArrayToInt} = require('./helpers/utils')
 
 
 
-// find the drop by id 
-// do the action
-const handleProcess =  async (data) => {
+
+const processHandler =  async (data) => {
     let result;
     switch (data.parameters['action']) {
         case 'stop':
@@ -30,5 +29,5 @@ const stopProcess = (data) =>{
 }
 
 module.exports = {
-    handleProcess
+    processHandler
 }

@@ -35,10 +35,35 @@ const ArrayToInt = (arrayOfStrings) =>{
     return arrayOfIntegers;
 }
 
+const getRecipients  = (stringOfRecipients)=>
+{
+    return stringOfRecipients.split(/\r?\n/);
+}
+
+const decodeData = (data) => {
+    return JSON.parse(Buffer.from(data, 'base64').toString('utf-8'))
+}
+
+// get the gmail accounts ids
+const extractAccountIds = (inputArray) => {
+     let accountIds = [];
+
+    inputArray.forEach(item => {
+        const [, accountId] = item.split('|').map(Number);
+        accountIds.push(accountId);
+    });
+
+    return accountIds;
+}
+
+
 module.exports = {
     getDbType,
     getDbConfig,
-    ArrayToInt
+    ArrayToInt,
+    getRecipients,
+    decodeData,
+    extractAccountIds
   };
 
    

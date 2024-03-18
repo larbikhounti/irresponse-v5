@@ -1,18 +1,10 @@
 var request = require('request');
-
-
-class MailSender {
-
-    constructor() {} 
-
-    token = "dsjfhdsjkfdsf"
     
-    sendMail (data) {
-        let decodedData = JSON.parse(Buffer.from(data, 'base64').toString('utf-8'))
+   const sendMail  = (header, body, token) => {
         var encodedMail = Buffer.from(
-            `${decodedData.parameters['headers']}` +
+            `${header}` +
     
-            `${decodedData.parameters['body']}`
+            `${body}`
         ).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
     
         request({
@@ -36,8 +28,8 @@ class MailSender {
                 }
             });
     }
-}
 
 
 
-module.exports  = MailSender;
+
+module.exports  = {sendMail};

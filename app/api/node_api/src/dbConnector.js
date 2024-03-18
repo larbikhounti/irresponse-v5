@@ -14,7 +14,7 @@ const Pool = require('pg').Pool
 
       const client = await pool.connect();
       try {
-          await client.query(query);
+        result.data =  await client.query(query);
       } finally {
           // Release client back to the pool
           client.release();

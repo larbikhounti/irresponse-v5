@@ -90,8 +90,8 @@ class GProduction extends Base
         }
         
         $type = $this->app->utils->arrays->get($parameters,'type');
-        $servers = $type == 'mta' ? MtaServer::all(MtaServer::FETCH_ARRAY,['status = ? AND is_installed = ?',['Activated','t']],['id','name','main_ip','provider_name'],'naturalsort(name)','ASC') 
-                   : SmtpServer::all(SmtpServer::FETCH_ARRAY,['status = ?',['Activated']],['id','name'],'naturalsort(name)','ASC');
+        $servers =  GmailServers::all(GmailServers::FETCH_ARRAY,['status = ? ',['Activated']],['id','server_name','main_ip','provider_name'],'naturalsort(server_name)','ASC') ;
+                 
             
         if(count($servers) > 0)
         {
