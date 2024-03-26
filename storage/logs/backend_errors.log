@@ -73,3 +73,23 @@
 	at java.lang.Integer.parseInt(Integer.java:615)
 	at tech.iresponse.Bootstrap.main(Unknown Source)
 
+[ 2024-03-26 02:05:57 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-03-26 02:06:07 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-03-26 02:06:22 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-03-26 02:07:01 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
