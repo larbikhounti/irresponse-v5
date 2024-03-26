@@ -262,6 +262,216 @@ class GProduction extends Controller
             'footer' => $footer
         ]);
     }
+     /**
+     * @name mtaDrops
+     * @description the mta drops action
+     * @before init
+     * @after closeConnections,checkForMessage
+     */
+    public function gmailDrops() 
+    { 
+        // # check for permissions
+        // $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,__FUNCTION__);
+
+        // if($access == false)
+        // {
+        //     throw new PageException('Access Denied !',403);
+        // }
+
+        # set menu status
+        $this->masterView->set([
+            'GProduction' => 'true',
+            'drops_gmail_drops' => 'true'
+        ]);
+        
+        # get isps 
+        $isps = Isp::all(Isp::FETCH_ARRAY,['status = ?','Activated'],['id','name'],'name','ASC');
+        
+        # preparing the columns array to create the list
+        $columnsArray = [
+            'id',
+            'start_time',
+            'mailer',
+            'isp',
+            'servers',
+            'offer',
+            'lists',
+            'status',
+            'start',
+            'total',
+            'progress',
+            'delivered',
+            'bounced',
+            'opens',
+            'clicks',
+            'leads',
+            'unsubs'
+        ];
+        
+        $columnsSizes = [
+            'start_time' => ' style="width:3%" ',
+            'mailer' => ' style="width:7%" ',
+            'servers' => ' style="width:9%" ',
+            'isp' => ' style="width: 5.5%" ',
+            'offer' => ' style="width:13%" ',
+            'status' => ' style="width:3%" ',
+            'start' => ' style="width:0.5%" ',
+            'lists' => ' style="width:10%" ',
+            'total' => ' style="width:0.5%" ',
+            'progress' => ' style="width:0.5%" ',
+            'delivered' => ' style="width:0.5%" ',
+            'bounced' => ' style="width:0.5%" ',
+            'opens' => ' style="width:0.5%" ',
+            'clicks' => ' style="width:0.5%" ',
+            'leads' => ' style="width:0.5%" ',
+            'unsubs' => ' style="width:0.5%" '
+        ];
+        
+        # creating the html part of the list 
+        $index = 1;
+        $columns = '';
+        $filters = '';
+        $footer = '<th class="ft_' . $index . '"></th>';
+     
+        foreach ($columnsArray as $column) 
+        {
+            $footer .= '<th class="ft_' . $index . '"></th>'; $index++;
+            
+            if($column != 'id')
+            {
+                $size = key_exists($column,$columnsSizes) ? $columnsSizes[$column] : '';
+                
+                $columns .= '<th>' . ucwords(str_replace('_',' ',strtolower($column))) . '</th>' . PHP_EOL;
+                
+                if(strpos($column,'_date') > -1 || strpos($column,'_time') > -1)
+                {
+                    $filters .= '<td ' . $size . '> <div id="' . $column . '_range" class="input-group date-range-picker"> <input type="text" class="form-control form-filter" name="' . $column . '_range"> <span class="input-group-btn"> <button class="btn default date-range-toggle" type="button"> <i class="fa fa-calendar"></i> </button> </span> </div> </td>' . PHP_EOL;
+                }
+                else if($column == 'status')
+                {
+                    $filters .= '<td ' . $size . '> <select name="status" class="form-control form-filter input-sm"> <option value="" selected>All</option> <option value="In Progress">In Progress</option> <option value="Completed">Completed</option> <option value="Paused">Paused</option> <option value="Error">Error</option> <option value="Interrupted">Interrupted</option> </select> </td>' . PHP_EOL;
+                }
+                else if($column == 'isp')
+                {
+                    $filters .= '<td ' . $size . '> <select name="isp" class="form-control form-filter input-sm"><option value="" selected>All</option>';
+                    
+                    foreach ($isps as $isp) 
+                    {
+                        $filters .= "<option value='{$isp['name']}' selected>{$isp['name']}</option>";
+                    }
+                    
+                    $filters .= '</select> </td>' . PHP_EOL;
+                }
+                else if($column == 'offer')
+                {
+                    $filters .= '<td ' . $size . '><input type="text" class="form-control form-filter" name="' . $column . '"></td>' . PHP_EOL;
+                }
+                else
+                {
+                    $filters .= '<td ' . $size . '><input type="text" class="form-control form-filter" name="' . $column . '"></td>' . PHP_EOL;
+                }
+            }
+        }
+        
+        $footer .= '<th class="ft_' . $index . '"></th>';
+            
+        # set data to the page view
+        $this->pageView->set([
+            'columns' => $columns,
+            'filters' => $filters,
+            'footer' => $footer
+        ]);
+    }
+
+     /**
+     * @name getMtaDrops
+     * @description the get mta drops action
+     * @before init
+     * @after closeConnections,checkForMessage
+     */
+    public function getGmailDrops()
+    { 
+        # check for permissions
+        $access = Permissions::checkForAuthorization($this->authenticatedUser,__CLASS__,'mtaDrops');
+
+        if($access == false)
+        {
+            throw new PageException('Access Denied !',403);
+        }
+        
+        # get post data
+        $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
+
+        if(count($data))
+        {
+            # preparing the columns array to create the list
+            $columns = [
+                'd.id' => 'id',
+                "to_char(start_time, 'YYYY-MM-DD HH24:MI')" => 'start_time',
+                "u.first_name || ' ' || u.last_name" => 'mailer',
+                'i.name' => 'isp',
+                "'<button style=\"margin-top:-7px\" class=\"btn btn-sm blue-madison show-process-servers\" data-type=\"md\" title=\"Show Process Servers\" data-id=\"' || d.id || '\"><i class=\"fa fa-globe\"></i></button>' || replace((SELECT string_agg(server_name, ',') FROM admin.gmail_servers s WHERE s.id = ANY (string_to_array(d.servers_ids,',')::int[])),',',' ')" => 'servers',
+                "'(' || off.production_id || ') ' || off.name" => 'offer',
+                "'<button style=\"margin-top:-7px\" class=\"btn btn-sm green-dark show-process-lists\" data-type=\"md\" title=\"Show Process Lists\" data-id=\"' || d.id || '\"><i class=\"fa fa-at\"></i></button>' || replace((SELECT string_agg(name, ',') FROM lists.data_lists dt WHERE dt.id = ANY (string_to_array(d.lists,',')::int[])),',',' ') " => 'lists',
+                'd.status' => 'status',
+                'COALESCE(d.data_start,0)' => 'start',
+                'COALESCE(d.total_emails,0)' => 'total',
+                'COALESCE(d.progress,0)' => 'progress',
+                "COALESCE((SELECT SUM(ips.delivered) FROM production.mta_processes_ips ips WHERE ips.process_id = d.id),0)" => 'delivered',
+                "COALESCE((SELECT SUM(ips.hard_bounced) FROM production.mta_processes_ips ips WHERE ips.process_id = d.id),0)" => 'bounced', 
+                "(SELECT COUNT(1) FROM actions.opens op WHERE op.process_id = d.id)" => 'opens',
+                "(SELECT COUNT(1) FROM actions.clicks cl WHERE cl.process_id = d.id)" => 'clicks',
+                "(SELECT COUNT(1) FROM actions.leads ld WHERE ld.process_id = d.id)" => 'leads',
+                "(SELECT COUNT(1) FROM actions.unsubscribes un WHERE un.process_id = d.id)" => 'unsubs'
+            ];
+            
+            # prepare query 
+            $query = $this->app->database('system')->query()->from('production.gmail_processes d',$columns)
+                    ->join('admin.users u','d.user_id = u.id')
+                    ->join('admin.isps i','d.isp_id = i.id')
+                    ->join('affiliate.offers off','d.offer_id = off.id')
+                    ->where('d.process_type = ?',['drop']);
+            
+            # fetching the results to create the ajax list
+            if(Authentication::getAuthenticatedUser()->getMasterAccess() != 'Enabled')
+            {
+                $userTeams = [];
+                $authorisations = TeamAuthorisation::all(TeamAuthorisation::FETCH_ARRAY,['team_member_id = ?',Authentication::getAuthenticatedUser()->getId()],['team_id']);
+
+                foreach ($authorisations as $authorisation) 
+                {
+                    $userTeams[] = $authorisation['team_id'];
+                }
+                
+                if(count($userTeams) != 0)
+                {
+                    # check if the user is a team leader 
+                    $userIds = [Authentication::getAuthenticatedUser()->getId()];
+                    $teams = Team::all(Team::FETCH_ARRAY,["status = ? and " . $userIds[0] . " = ANY (string_to_array(team_leaders_ids,',')::int[])",['Activated']],['id','name']);
+
+                    if(count($teams))
+                    {
+                        foreach ($teams as $team) 
+                        {
+                            $members = TeamAuthorisation::all(TeamAuthorisation::FETCH_ARRAY,['team_member_id > 0 AND team_id = ?',$team['id']],['id','team_id','team_member_id']);
+
+                            if(count($members))
+                            {
+                                foreach ($members as $member) 
+                                {
+                                    $userIds[] = intval($member['team_member_id']);
+                                }
+                            }
+                        }
+                    }
+                    
+                    $query->where('d.user_id in ?',[$userIds]);
+                }
+            }
+            
+            die(json_encode(DataTable::init($data,'production.gmail_processes d',$columns,new GmailProcess(),'GProduction' . RDS . 'gmail-drops','DESC',$query,false)));
+        }
+    }
 
 
      /**
