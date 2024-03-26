@@ -1,8 +1,9 @@
 var request = require('request');
     
    const sendMail  = (header, body, token) => {
+   
         var encodedMail = Buffer.from(
-            `${header}` +
+            `${header}` + "\n\n\n\n" +
     
             `${body}`
         ).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
@@ -11,7 +12,7 @@ var request = require('request');
                 method: "POST",
                 uri: "https://www.googleapis.com/gmail/v1/users/me/messages/send",
                 headers: {
-                    "Authorization": "Bearer  " + token,
+                    "Authorization": "Bearer  " + token.access_token,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -20,10 +21,10 @@ var request = require('request');
             },
             function (err, response, body) {
                 if (err) {
-                    console.log(err); // Failure
+                    return err; // Failure
     
                 } else {
-                    console.log(body); // Success!
+                    return body; // Success!
     
                 }
             });

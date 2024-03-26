@@ -1,16 +1,12 @@
+const {sendMail} = require('./MailSender')
+const {connect} = require('./dbConnector')
 const {
-    sendMail
-} = require('./MailSender')
-const {
-    connect
-} = require('./dbConnector')
-const {
-    getDbType,
-    getDbConfig,
     getRecipients,
     extractAccountIds,
     replaceTo,
-    replaceTagsWithRandom
+    replaceTagsWithRandom,
+    getDbConfig,
+    getDbType
 } = require('./helpers/utils')
 
 const mailHandler = async (data) => {
@@ -30,20 +26,23 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
-   let headers = [];
+   let results = [];
     const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
-   //let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
+    let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
 
     const testRecipientsList = getRecipients(data.parameters.rcpts);
     testRecipientsList.forEach(recipient => {
-       headers.push(replaceTagsWithRandom(data.parameters['headers']))
-        // result.data.rows.forEach(token => {
-        //     // manuplate body and header before sending a test
-        //     sendMail(header, body, token)
-        // });
+      let header = replaceTagsWithRandom(data.parameters['headers']) // replace tag random with random
+      let body = replaceTagsWithRandom(data.parameters['body'])
+      header = replaceTo(header,recipient) // replace to with email
+
+        result.data.rows.forEach(token => {
+            // manuplate body and header before sending a test
+            results.push(sendMail(header, body, token))
+        });
         
     });
-    return headers;
+    return results;
     // result = await connect(getDbConfig(getDbType(data)), stopProcess(data));
 }
 

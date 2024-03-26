@@ -11,7 +11,7 @@ const generateRandomString = (length, options) => {
 
 // Function to generate unique random tags
 const generateUniqueRandomTag = (length, options) => {
-    const generatedTags = new Set();
+    const generatedTags = new Set(); // unique 
     let tag;
     do {
         tag = generateRandomString(length, options);
