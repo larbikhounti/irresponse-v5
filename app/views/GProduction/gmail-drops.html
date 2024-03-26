@@ -15,7 +15,7 @@
                 <button class="btn btn-outline btn-sm dark show-process-details" data-target="drops-processes" data-type="md" title="Show Process Details"><i class="fa fa-desktop"></i></button>
                 <button class="btn btn-outline btn-sm blue execute-process-actions" data-target="drops-processes" data-type="md" data-action-type="resume" title="Resume Process"><i class="fa fa-play"></i></button>
                 <button class="btn btn-outline btn-sm yellow execute-process-actions" data-target="drops-processes" data-type="md" data-action-type="pause" title="Pause Process"><i class="fa fa-pause"></i></button>
-                <button class="btn btn-outline btn-sm red execute-process-actions" data-target="drops-processes" data-type="md" data-action-type="stop" title="Stop Process"><i class="fa fa-stop"></i></button>
+                <button class="btn btn-outline btn-sm red execute-process-actions" data-target="drops-processes" data-type="gt" data-action-type="stop" title="Stop Process"><i class="fa fa-stop"></i></button>
                 {if($connectedUser->getMasterAccess() == 'Enabled')}
                     <button class="btn btn-outline btn-sm red table-group-action-submit" data-table-group-action="delete" title="Delete Process"><i class="fa fa-close"></i></button>
                 {/if}
