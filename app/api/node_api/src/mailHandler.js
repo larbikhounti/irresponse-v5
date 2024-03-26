@@ -6,9 +6,9 @@ const {
     replaceTo,
     replaceTagsWithRandom,
     getDbConfig,
-    getDbType
+    getDbType,
+    getDataRecipients
 } = require('./helpers/utils')
-
 const mailHandler = async (data) => {
     let result;
     switch (data.action) {
@@ -16,7 +16,10 @@ const mailHandler = async (data) => {
             // send mail tests
             result = sendTests(data)
             break;
-
+        case 'proceedDrop':
+            // send mail tests
+            result = sendDrop(data)
+            break;
         default:
             //result = data.action
             result = 'northing'
@@ -28,7 +31,7 @@ const mailHandler = async (data) => {
 const sendTests = async (data) => {
    let results = [];
     const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
-    let result = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
+    let gmail_tokens = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
 
     const testRecipientsList = getRecipients(data.parameters.rcpts);
     testRecipientsList.forEach(recipient => {
@@ -36,7 +39,7 @@ const sendTests = async (data) => {
       let body = replaceTagsWithRandom(data.parameters['body'])
       header = replaceTo(header,recipient) // replace to with email
 
-        result.data.rows.forEach(token => {
+      gmail_tokens.data.rows.forEach(token => {
             // manuplate body and header before sending a test
             results.push(sendMail(header, body, token))
         });
@@ -44,6 +47,14 @@ const sendTests = async (data) => {
     });
     return results;
     // result = await connect(getDbConfig(getDbType(data)), stopProcess(data));
+}
+
+const sendDrop = async (data) => {
+    // let results = [];
+    // const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
+    // let gmail_tokens = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
+    let lists = await getDataRecipients(data)
+    return lists;
 }
 
 const getTokens = (extractedAccountIds) => {

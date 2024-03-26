@@ -22,13 +22,22 @@ switch (data.action) {
             });
         break;
     case 'proceedTest':
-       mailHandler(data)
-        .then(result => {
-            console.log(result);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        mailHandler(data)
+            .then(result => {
+                console.log(result);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        break;
+    case 'proceedDrop':
+        mailHandler(data)
+            .then(result => {
+                console.log(result);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         break;
     default:
         break;

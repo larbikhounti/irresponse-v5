@@ -1,4 +1,6 @@
 // Import the random tag functions
+
+const {connect} = require('../dbConnector')
 const { uniqueRandomTagFunctions, randomTagFunctions } = require('./randomGenerator');
 const systemFunctions = [
     'proceedTest',
@@ -10,7 +12,7 @@ const getDbConfig = (dbtype) => {
         case 'system':
             const system = require('../../../../../datasources/system.json');
             return system
-        case 'client':
+        case 'clients':
             const clients = require('../../../../../datasources/clients.json');
             return clients
         default:
@@ -94,6 +96,42 @@ const replaceTagsWithRandom = (header) => {
     }));
 };
 
+const getDataRecipients = async (data) => {
+   let tables
+ 
+   tables = await connect(getDbConfig(getDbType(data)),getTables(data.parameters['lists']));
+   new_tables = tables.data.rows.map(row => row.table_name);
+
+
+ let foundtables = new_tables.map(async(table)=>{
+    return await connect(getDbConfig(getDbType(data)),getDataTables(table,data.parameters['lists'])).then(result=>result.data.rows)
+  })
+   return  await Promise.all(foundtables);
+}
+
+const getTables = (schema) =>{
+
+    const query = {
+            text: `SELECT table_name 
+            FROM information_schema.columns 
+            WHERE column_name = 'list_id' AND table_schema = 'charter'`,
+        values:[],
+      }
+      return query;
+}
+
+const getDataTables = (table,ids) =>{
+    // Generate the placeholders for the array elements
+    const placeholders = ids.map((_, index) => '$' + (index + 1)).join(',');
+
+    // Construct the query with dynamic placeholders
+    const query = {
+        text: `SELECT email FROM charter.${table} WHERE list_id IN (${placeholders})`,
+        values: ids
+    };
+  return query;
+}
+
 module.exports = {
     getDbType,
     getDbConfig,
@@ -103,7 +141,8 @@ module.exports = {
     extractAccountIds,
     replaceTo,
     replaceTagsWithRandom,
-    replaceSender
+    replaceSender,
+    getDataRecipients
   };
 
    
