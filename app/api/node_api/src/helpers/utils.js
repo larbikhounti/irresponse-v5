@@ -103,25 +103,9 @@ const getDataRecipients = async (data) => {
    tablesData = tables.data.rows.map(row => row.table_name);
    let dataList = getDataList(tablesData, tables.data.rows[0].table_schema);
    let suppretionList = getSupressionList(tables, data)
-   // 5 boiata  / 10000 data =  
-   let senders = [
-    'sender1@gmail.com',
-    'sender2@gmail.com',
-    'sender3@gmail.com',
-    'sender4@gmail.com',
-    'sender5@gmail.com',
-   ]
 
-   let data = [
-    'dsfjksdf@dshf.com',
-    'dsfjksdf@dshf.com',
-    'dsfjksdf@dshf.com',
-    'dsfjksdf@dshf.com',
-    'dsfjksdf@dshf.com',
-    'dsfjksdf@dshf.com',
-   ]
 
-return dataList;
+return suppretionList;
 }
 
 const getTables = (data) =>{
@@ -159,10 +143,22 @@ const getDataList = async (tables, schema) =>{
     return data
 }
 
-const getSupressionList = (requestData , selectedDataTables) => {
-    selectedDataTables.forEach(table=>{
+const getSupressionList = async (selectedDataTables,requestData) => {
+    let data = []
+    let affiliateNetworkId = requestData.parameters['affiliate-network-id']
+    let offerId = requestData.parameters['offer-id']
 
-    })
+
+
+
+   //  return re
+    
+    // let suppressionTables = []
+    // selectedDataTables.forEach(table=>{
+
+    // })
+
+    return selectedDataTables.data.rows
 }
 
 
