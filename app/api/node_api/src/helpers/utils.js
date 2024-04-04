@@ -97,40 +97,75 @@ const replaceTagsWithRandom = (header) => {
 };
 
 const getDataRecipients = async (data) => {
+  
    let tables
- 
-   tables = await connect(getDbConfig(getDbType(data)),getTables(data.parameters['lists']));
-   new_tables = tables.data.rows.map(row => row.table_name);
+   tables = await connect(getDbConfig('system'),getTables(data));
+   tablesData = tables.data.rows.map(row => row.table_name);
+   let dataList = getDataList(tablesData, tables.data.rows[0].table_schema);
+   let suppretionList = getSupressionList(tables, data)
+   // 5 boiata  / 10000 data =  
+   let senders = [
+    'sender1@gmail.com',
+    'sender2@gmail.com',
+    'sender3@gmail.com',
+    'sender4@gmail.com',
+    'sender5@gmail.com',
+   ]
 
+   let data = [
+    'dsfjksdf@dshf.com',
+    'dsfjksdf@dshf.com',
+    'dsfjksdf@dshf.com',
+    'dsfjksdf@dshf.com',
+    'dsfjksdf@dshf.com',
+    'dsfjksdf@dshf.com',
+   ]
 
- let foundtables = new_tables.map(async(table)=>{
-    return await connect(getDbConfig(getDbType(data)),getDataTables(table,data.parameters['lists'])).then(result=>result.data.rows)
-  })
-   return  await Promise.all(foundtables);
+return dataList;
 }
 
-const getTables = (schema) =>{
-
+const getTables = (data) =>{
+    const placeholders = data.parameters['lists'].map((_, index) => '$' + (index + 1)).join(',');
+    const lists = data.parameters['lists'].map(list => parseInt(list))
     const query = {
-            text: `SELECT table_name 
-            FROM information_schema.columns 
-            WHERE column_name = 'list_id' AND table_schema = 'charter'`,
-        values:[],
-      }
-      return query;
-}
-
-const getDataTables = (table,ids) =>{
-    // Generate the placeholders for the array elements
-    const placeholders = ids.map((_, index) => '$' + (index + 1)).join(',');
-
-    // Construct the query with dynamic placeholders
-    const query = {
-        text: `SELECT email FROM charter.${table} WHERE list_id IN (${placeholders})`,
-        values: ids
-    };
+        text: `SELECT id, table_name , table_schema
+        FROM lists.data_lists
+        WHERE id IN (${placeholders})`,
+    values:lists,
+  }
   return query;
 }
+
+const getDataList = async (tables, schema) =>{  
+    let data = []
+    let resolvedData =  await Promise.all(tables.map(async table => {
+         const query = {
+             text: `SELECT email, email_md5
+             FROM ${schema}.${table}`,
+             values: [],
+         }
+        return  await connect(getDbConfig('clients'),query)
+     }));
+    // data.push(resolvedData)
+    resolvedData.forEach(list =>{
+        list.data.rows.forEach(row =>{
+            data.push(row) 
+        })
+    })
+
+
+
+   //  return resolvedData[2].data.rows
+    return data
+}
+
+const getSupressionList = (requestData , selectedDataTables) => {
+    selectedDataTables.forEach(table=>{
+
+    })
+}
+
+
 
 module.exports = {
     getDbType,
