@@ -105,7 +105,7 @@ const getDataRecipients = async (data) => {
    let suppretionList = getSupressionList(tables, data)
 
 
-return suppretionList;
+return dataList;
 }
 
 const getTables = (data) =>{
@@ -136,29 +136,42 @@ const getDataList = async (tables, schema) =>{
             data.push(row) 
         })
     })
-
-
-
    //  return resolvedData[2].data.rows
     return data
 }
 
 const getSupressionList = async (selectedDataTables,requestData) => {
-    let data = []
+    let SupressionList = []
     let affiliateNetworkId = requestData.parameters['affiliate-network-id']
-    let offerId = requestData.parameters['offer-id']
+    let offerId = await getProductionId(requestData.parameters['offer-id']).then(result=> result.data.rows[0].production_id)
 
+        for (let index = 0; index <  selectedDataTables.data.rows.length; index++) {
+            const query = {
+                text: `SELECT email_md5 FROM suppressions.sup_list_${affiliateNetworkId}_${offerId}_${selectedDataTables.data.rows[index].id}`,
+                values: [],
+            }
+            let suppresionList = await connect(getDbConfig('clients'), query).then(result => result.data.rows);
+           if (suppresionList.length != 0) {
+                SupressionList.push(suppresionList)
+            }
+        }
+    return SupressionList
+}
 
-
-
-   //  return re
+const filterEmailList  = (dataList , suppretionList) =>{
     
-    // let suppressionTables = []
-    // selectedDataTables.forEach(table=>{
 
-    // })
+    return filteredList
+ }
 
-    return selectedDataTables.data.rows
+ 
+const getProductionId = async (id) => {
+    const query = {
+        text: `SELECT production_id
+        FROM affiliate.offers WHERE id = ${id}`,
+        values: [],
+    }
+    return await connect(getDbConfig('system'),query);
 }
 
 
