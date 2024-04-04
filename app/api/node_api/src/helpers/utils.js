@@ -101,11 +101,10 @@ const getDataRecipients = async (data) => {
    let tables
    tables = await connect(getDbConfig('system'),getTables(data));
    tablesData = tables.data.rows.map(row => row.table_name);
-   let dataList = getDataList(tablesData, tables.data.rows[0].table_schema);
-   let suppretionList = getSupressionList(tables, data)
+   let dataList = (await getDataList(tablesData, tables.data.rows[0].table_schema))
+   let suppretionList =  (await getSupressionList(tables, data))
 
-
-return dataList;
+return  filterEmailList(dataList, suppretionList).length; 
 }
 
 const getTables = (data) =>{
@@ -120,7 +119,7 @@ const getTables = (data) =>{
   return query;
 }
 
-const getDataList = async (tables, schema) =>{  
+const  getDataList  = async (tables, schema)  =>{  
     let data = []
     let resolvedData =  await Promise.all(tables.map(async table => {
          const query = {
@@ -136,8 +135,7 @@ const getDataList = async (tables, schema) =>{
             data.push(row) 
         })
     })
-   //  return resolvedData[2].data.rows
-    return data
+    return data.flat()
 }
 
 const getSupressionList = async (selectedDataTables,requestData) => {
@@ -150,19 +148,23 @@ const getSupressionList = async (selectedDataTables,requestData) => {
                 text: `SELECT email_md5 FROM suppressions.sup_list_${affiliateNetworkId}_${offerId}_${selectedDataTables.data.rows[index].id}`,
                 values: [],
             }
-            let suppresionList = await connect(getDbConfig('clients'), query).then(result => result.data.rows);
-           if (suppresionList.length != 0) {
-                SupressionList.push(suppresionList)
+            let List = await connect(getDbConfig('clients'), query).then(result => result.data.rows);
+           if (List.length != 0) {
+                SupressionList.push(List)
             }
         }
-    return SupressionList
+    return SupressionList.flat()
 }
 
 const filterEmailList  = (dataList , suppretionList) =>{
-    
-
-    return filteredList
+    return  removeSuppressedEmails(dataList, suppretionList);
  }
+
+const removeSuppressedEmails = (datalist, suppressionList) => {
+    return datalist.filter(data => {
+    return !suppressionList.some(suppression => suppression.email_md5 === data.email_md5);
+    });
+};
 
  
 const getProductionId = async (id) => {
