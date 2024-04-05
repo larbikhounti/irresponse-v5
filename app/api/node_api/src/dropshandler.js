@@ -1,5 +1,5 @@
 const {connect} = require('./dbConnector')
-const {getDbType, getDbConfig, ArrayToInt} = require('./helpers/utils')
+const {getDbType, getDbConfig, ArrayToInt,ProcessKiller} = require('./helpers/utils')
 
 
 
@@ -9,8 +9,10 @@ const processHandler =  async (data) => {
     let result;
     switch (data.parameters['action']) {
         case 'stop':
-             result = await connect(getDbConfig(getDbType(data)),stopProcess(data));
+              await connect(getDbConfig(getDbType(data)),stopProcess(data));
+              result = ProcessKiller(process.pid)
             break;
+
     
         default:
             break;

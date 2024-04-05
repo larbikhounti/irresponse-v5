@@ -1067,7 +1067,7 @@ class Production extends Base
            
 
             if ($methodSend == "gmail") {
-                
+                $parameters['process-id'] = $processId;
                 # call iresponse nodeJs api
                $apiResult =  Api::callGmail($methodSend,$controller,$action,$parameters);
                 // if (count($apiResult['error'] > 0)) {

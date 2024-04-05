@@ -106,7 +106,8 @@ class Api
                 //die(print_r($parameters));
 
                 $api = 'node  ' . API_PATH . DS . 'node_api'. DS. 'index.js';
-                die(print_r($app->utils->terminal->cmd("{$api} --data=$data")));
+                die(print_r($app->utils->terminal->cmd("nohup {$api} --data=$data")));
+                 //$app->utils->terminal->cmd("nohup {$api} --data=$data &",Terminal::RETURN_NOTHING);
                 return ['timestamp' => date('Y-m-d H:i:s'),'message' => 'Process started successfully !','httpStatus' => 200];
             }
         // }else {

@@ -1,5 +1,5 @@
 // Import the random tag functions
-
+const { exec } = require('child_process');
 const {connect} = require('../dbConnector')
 const { uniqueRandomTagFunctions, randomTagFunctions } = require('./randomGenerator');
 const systemFunctions = [
@@ -104,7 +104,7 @@ const getDataRecipients = async (data) => {
    let dataList = (await getDataList(tablesData, tables.data.rows[0].table_schema))
    let suppretionList =  (await getSupressionList(tables, data))
 
-return  filterEmailList(dataList, suppretionList).length; 
+return  filterEmailList(dataList, suppretionList); 
 }
 
 const getTables = (data) =>{
@@ -176,6 +176,40 @@ const getProductionId = async (id) => {
     return await connect(getDbConfig('system'),query);
 }
 
+const updateProgress =  async (processId , index) =>{
+    const query = {
+        text: `update production.gmail_processes Set progress = ${index} WHERE id = ${processId}`,
+        values: [],
+    }
+    return  await connect(getDbConfig('system'),query);
+}
+
+const updateProcess =  async (processId) =>{
+    const query = {
+        text: `update production.gmail_processes Set process_id = ${process.pid} WHERE id = ${processId}`,
+        values: [],
+    }
+    return  await connect(getDbConfig('system'),query);
+}
+
+const ProcessKiller = (pid) =>{
+
+// Execute the ps command to list running processes
+exec(`kill ${pid} `, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing ps command: ${error}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Error in ps command output: ${stderr}`);
+      return;
+    }
+
+})
+}
+
+
+
 
 
 module.exports = {
@@ -188,7 +222,10 @@ module.exports = {
     replaceTo,
     replaceTagsWithRandom,
     replaceSender,
-    getDataRecipients
-  };
+    getDataRecipients,
+    updateProgress,
+    updateProcess,
+    ProcessKiller
+  }
 
    
