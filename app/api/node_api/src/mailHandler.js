@@ -59,7 +59,8 @@ const sendDrop = async (data) => {
      const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
     let gmail_tokens = await connect(getDbConfig('system'),getTokens(extractedAccountIds)).then(result => result.data.rows);
     let lists = await getDataRecipients(data)
-   await updateProcess(processid)
+    await updateProcess(processid)
+    
    for (let i = dataStart; i <= dataCount; i++) {
     results.push(await updateProgress(processid,i)) 
     // // This calculates which sender is responsible for sending to the current recipient

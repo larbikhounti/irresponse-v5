@@ -1,5 +1,6 @@
+const {exec} = require('child_process');
 const {connect} = require('./dbConnector')
-const {getDbType, getDbConfig, ArrayToInt,ProcessKiller} = require('./helpers/utils')
+const {getDbType, getDbConfig, ArrayToInt} = require('./helpers/utils')
 
 
 
@@ -10,7 +11,7 @@ const processHandler =  async (data) => {
     switch (data.parameters['action']) {
         case 'stop':
               await connect(getDbConfig(getDbType(data)),stopProcess(data));
-              result = ProcessKiller(process.pid)
+              result = ProcessKiller(data)
             break;
 
     
@@ -29,6 +30,30 @@ const stopProcess = (data) =>{
   }
   return query;
 }
+
+const ProcessKiller = async (data) =>{
+
+    const query = {
+        text: `select process_id from production.gmail_processes WHERE id = ${data.parameters['processes-ids'][0]}`,
+        values: [],
+    }
+    let process_id =  await connect(getDbConfig('system'),query).then(result => result.data.rows[0].process_id);
+// Execute the ps command to list running processes
+exec(`sudo kill ${process_id} `, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing ps command: ${error}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Error in ps command output: ${stderr}`);
+      return;
+    }
+    stopProcess(data)
+
+})
+
+}
+
 
 module.exports = {
     processHandler
