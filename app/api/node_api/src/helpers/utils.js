@@ -195,7 +195,8 @@ const updateProcess =  async (processId) =>{
 const ProcessKiller = (pid) =>{
 
 // Execute the ps command to list running processes
-exec(`kill ${pid} `, (error, stdout, stderr) => {
+exec(`sudo kill ${pid} `, (error, stdout, stderr) => {
+    console.log(stdout)
     if (error) {
       console.error(`Error executing ps command: ${error}`);
       return;
