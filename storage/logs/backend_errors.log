@@ -1,0 +1,35 @@
+[ 2024-04-05 07:16:33 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-04-05 07:17:08 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-04-06 23:28:19 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-04-06 23:36:17 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-04-06 23:51:15 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-04-06 23:51:35 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
+[ 2024-04-06 23:54:52 ] ERROR in tech.iresponse.break.do : java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at tech.iresponse.Bootstrap.main(Unknown Source)
+
