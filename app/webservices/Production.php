@@ -139,7 +139,7 @@ class Production extends Base
         if(count($serverIds) > 0)
         {
             $vmtas = [];
-            if ($ispId != "" && is_null($sendMethod)) {
+            if ($ispId != "" && $sendMethod == "") {
               
                 switch ($vmtasType)
                     {
