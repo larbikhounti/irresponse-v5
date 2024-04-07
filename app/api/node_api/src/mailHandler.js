@@ -1,5 +1,9 @@
-const {sendMail} = require('./MailSender')
-const {connect} = require('./dbConnector')
+const {
+    sendMail
+} = require('./MailSender')
+const {
+    connect
+} = require('./dbConnector')
 const {
     getRecipients,
     extractAccountIds,
@@ -10,6 +14,9 @@ const {
     getDataRecipients,
     updateProgress,
     updateProcess,
+    replaceCharset,
+    replaceContentType,
+    replaceContentTransferEncoding
 } = require('./helpers/utils')
 const mailHandler = async (data) => {
     let result;
@@ -31,67 +38,82 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
-   let results = [];
-    const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
-    let gmail_tokens = await connect(getDbConfig(getDbType(data)),getTokens(extractedAccountIds));
+    let results = [];
+    const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
+    let gmail_tokens = await connect(getDbConfig(getDbType(data)), getTokens(extractedAccountIds));
 
     const testRecipientsList = getRecipients(data.parameters.rcpts);
     testRecipientsList.forEach(recipient => {
-      let header = replaceTagsWithRandom(data.parameters['headers']) // replace tag random with random
-      let body = replaceTagsWithRandom(data.parameters['body'])
-      header = replaceTo(header,recipient) // replace to with email
+        let header = replaceTagsWithRandom(data.parameters['headers']) // replace tag random with random
+        let body = replaceTagsWithRandom(data.parameters['body'])
+        header = replaceTo(header, recipient) // replace to with email
 
-      gmail_tokens.data.rows.forEach(token => {
+        gmail_tokens.data.rows.forEach(token => {
             // manuplate body and header before sending a test
             results.push(sendMail(header, body, token))
         });
-        
+
     });
     return results;
     // result = await connect(getDbConfig(getDbType(data)), stopProcess(data));
 }
 
 const sendDrop = async (data) => {
-     let results = [];
     let dataCount = data.parameters['data-count']
     let dataStart = data.parameters['data-start']
     let processid = data.parameters['process-id']
-     const extractedAccountIds  =  extractAccountIds(data.parameters['selected-vmtas'])
-    let gmail_tokens = await connect(getDbConfig('system'),getTokens(extractedAccountIds)).then(result => result.data.rows);
+    let testAfter = data.parameters['test-after']
+    const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
+    let gmail_tokens = await connect(getDbConfig('system'), getTokens(extractedAccountIds)).then(result => result.data.rows);
     let lists = await getDataRecipients(data)
     await updateProcess(processid)
-    
-   for (let i = dataStart; i <= dataCount; i++) {
-    results.push(await updateProgress(processid,i)) 
-    // // This calculates which sender is responsible for sending to the current recipient
-    // let senderIndex = i % gmail_tokens.length;
-    // let sender = gmail_tokens[senderIndex];
-    // let recipient = lists[i];
+    let header = replaceTagsWithRandom(data.parameters['headers'])
+    let body = replaceTagsWithRandom(data.parameters['body'])
+    header = replaceCharset(header, data.parameters['creative-charset'])
+    header = replaceContentType(header, data.parameters['creative-content-type'])
+    header = replaceContentTransferEncoding(header, data.parameters['creative-content-transfert-encoding'])
+    let count = 0;
+    let headers = []
+    for (let i = dataStart; i < dataCount; i++) {
+        count++
+        await updateProgress(processid, i)
+        // // This calculates which sender is responsible for sending to the current recipient
+        let senderIndex = i % gmail_tokens.length;
+        let sender = gmail_tokens[senderIndex];
+        let recipient = lists[i];
+        // send test after
+        testAfter = parseInt(testAfter)
+        if (count == testAfter) {
+            let testRecipientsList = getRecipients(data.parameters.rcpts);
+            testRecipientsList.forEach(recipient => {
+                let testHeader = replaceTo(header, recipient)
+                //send test
+                sendMail(testHeader, body, sender)
+                count = 0
+            });
+        }
+        header = replaceTo(header, recipient.email)
+        sendMail(header, body, sender);
 
-    // let header = replaceTagsWithRandom(data.parameters['headers']) // replace tag random with random
-    // let body = replaceTagsWithRandom(data.parameters['body'])
-    // header = replaceTo(header,recipient.email) // replace to with email
-    //results.push(sendMail(header, body, token));
-      
     }
-    return results
+    return headers
 
 }
 
 const getTokens = (extractedAccountIds) => {
     var params = [];
-    for(var i = 1; i <= extractedAccountIds.length; i++) {
-    params.push('$' + i);
+    for (var i = 1; i <= extractedAccountIds.length; i++) {
+        params.push('$' + i);
     }
     const query = {
-        text: "select access_token from  admin.gmail_users  WHERE id IN (" + params.join(',') + ")" ,
+        text: "select access_token from  admin.gmail_users  WHERE id IN (" + params.join(',') + ")",
         values: extractedAccountIds,
-      }
-      return query;
+    }
+    return query;
 }
 
 // get mail account info
-const getMailAccount = () =>{
+const getMailAccount = () => {
 
 }
 

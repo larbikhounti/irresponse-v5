@@ -8,7 +8,7 @@ var request = require('request');
             `${body}`
         ).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
     
-        request({
+     return    request({
                 method: "POST",
                 uri: "https://www.googleapis.com/gmail/v1/users/me/messages/send",
                 headers: {

@@ -60,8 +60,23 @@ const extractAccountIds = (inputArray) => {
 }
 
 const replaceTo = (header,to) =>{
-        const emailRegex = /\[email\]/g;
-        return JSON.parse(JSON.stringify(header).replace(emailRegex, to));
+        const Regex = /\[email\]/g;
+        return JSON.parse(JSON.stringify(header).replace(Regex, to));
+}
+
+const replaceCharset = (header,charset) =>{
+    const Regex = /\[charset\]/g;
+    return JSON.parse(JSON.stringify(header).replace(Regex, charset));
+}
+
+const replaceContentType = (header,contentType) =>{
+    const Regex = /\[content_type\]/g;
+    return JSON.parse(JSON.stringify(header).replace(Regex, contentType));
+}
+
+const replaceContentTransferEncoding = (header,contentEncoding) =>{
+    const Regex = /\[content_transfer_encoding\]/g;
+    return JSON.parse(JSON.stringify(header).replace(Regex, contentEncoding));
 }
 
 const replaceSender = (header,sender) =>{
@@ -210,6 +225,9 @@ module.exports = {
     getDataRecipients,
     updateProgress,
     updateProcess,
+    replaceCharset,
+    replaceContentType,
+    replaceContentTransferEncoding
   }
 
    
