@@ -762,8 +762,7 @@ class Production extends Base
         if(count($parameters))
         {
             #send method
-            $methodSend = $this->app->utils->arrays->get($parameters,'method-send');
-            
+            $methodSend = $this->app->utils->arrays->get($parameters,'send-method');
             # drop 
             $json = json_encode($parameters);
             
@@ -809,6 +808,8 @@ class Production extends Base
 
             if(!is_array($componentsIds) || count($componentsIds) == 0)
             {
+                
+                
                 Page::printApiResults(500,$smtpMtaSwitch == 'mta' ? 'No vmtas found !' : 'No smtp users found !');
             }
             
@@ -822,9 +823,9 @@ class Production extends Base
             $componentsIds = array_filter(array_unique($tmp));
             
             if ($methodSend == "gmail") {
-               
+                
                 $components =  GmailUser::all(GmailUser::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','gmail_server_id' => 'server_id']) ;
-
+                
             }else {
                 $components = $smtpMtaSwitch == 'mta' ? ServerVmta::all(ServerVmta::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','mta_server_id' => 'server_id']) 
                 : SmtpUser::all(SmtpUser::FETCH_ARRAY,['id IN ?',[$componentsIds]],['id','smtp_server_id' => 'server_id']);
@@ -833,6 +834,7 @@ class Production extends Base
            
             if(count($components) == 0)
             { 
+                
                 Page::printApiResults(500,$smtpMtaSwitch == 'mta' ? 'No vmtas found !' : 'No smtp users found !');
             }
             

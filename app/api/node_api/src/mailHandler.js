@@ -65,7 +65,9 @@ const sendDrop = async (data) => {
     let testAfter = data.parameters['test-after']
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
     let gmail_tokens = await connect(getDbConfig('system'), getTokens(extractedAccountIds)).then(result => result.data.rows);
+    
     let lists = await getDataRecipients(data)
+    //return lists
     await updateProcess(processid)
     let header = replaceTagsWithRandom(data.parameters['headers'])
     let body = replaceTagsWithRandom(data.parameters['body'])
