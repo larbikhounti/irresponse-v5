@@ -88,14 +88,14 @@ const sendDrop = async (data) => {
         if (count == testAfter) {
             let testRecipientsList = getRecipients(data.parameters.rcpts);
             testRecipientsList.forEach(recipient => {
-                let testHeader = replaceTo(header, recipient)
                 //send test
-                sendMail(testHeader, body, sender)
+                sendMail(replaceTo(header, recipient), body, sender)
                 count = 0
             });
         }
-        header = replaceTo(header, recipient.email)
-        sendMail(header, body, sender);
+        
+
+        sendMail(replaceTo(header, recipient.email), body, sender);
 
     }
     return headers
