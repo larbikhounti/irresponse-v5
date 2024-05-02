@@ -70,6 +70,7 @@ const sendDrop = async (data) => {
     let gmail_users = await connect(getDbConfig('system'), getTokens(extractedAccountIds)).then(result => result.data.rows);
     
     let lists = await getDataRecipients(data)
+    let slicedLists =  lists.slice(dataStart)
     //return lists
     await updateProcess(processid)
     let header = replaceTagsWithRandom(data.parameters['headers'])
@@ -79,13 +80,13 @@ const sendDrop = async (data) => {
     header = replaceContentTransferEncoding(header, data.parameters['creative-content-transfert-encoding'])
     let count = 0;
     let headers = []
-    for (let i = dataStart; i < dataCount; i++) {
+    for (let i = 0; i < dataCount; i++) {
         count++
         await updateProgress(processid, i)
         // // This calculates which sender is responsible for sending to the current recipient
         let senderIndex = i % gmail_users.length;
         let user = gmail_users[senderIndex];
-        let recipient = lists[i];
+        let recipient = slicedLists[i];
         header_sender = replaceSender(header,user.email)
         // send test after
         testAfter = parseInt(testAfter)
