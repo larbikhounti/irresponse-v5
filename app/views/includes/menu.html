@@ -118,24 +118,11 @@
             </a>
             <ul class="sub-menu">
                
-                    <li class="">
-                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/gmail-send-process.html" class="nav-link "> 
-                            <span class="title"> Send Page </span>
-                        </a>
-                    </li>
-                
-               
                     <li class="{if(isset($drops_mta_drops))}{echo 'active'}{/if} ">
                         <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/add-server.html" class="nav-link "> 
-                            <span class="title"> Add Server </span>
+                            <span class="title"> Manage Servers & inboxes</span>
                         </a>
                     </li>
-                    <li class="{if(isset($drops_mta_drops))}{echo 'active'}{/if} ">
-                        <a {if(IR\App\Helpers\Page::openPageInNewTab())} target="_blank" {/if} href="{echo $app['base_url']}/GProduction/add-inbox.html" class="nav-link "> 
-                            <span class="title"> Add Inbox </span>
-                        </a>
-                    </li>
-                
             </ul>
         </li>
     {/if}
