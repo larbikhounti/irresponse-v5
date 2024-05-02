@@ -21,6 +21,7 @@ use IR\App\Helpers\Api as Api;
 # models
 use IR\App\Models\Admin\MtaServer as MtaServer;
 use IR\App\Models\Admin\SmtpServer as SmtpServer;
+use IR\App\Models\Admin\GmailServers as GmailServers;
 use IR\App\Models\Admin\ServerVmta as ServerVmta;
 use IR\App\Models\Admin\SmtpUser as SmtpUser;
 use IR\App\Models\Admin\Isp as Isp;
@@ -90,7 +91,7 @@ class GProduction extends Base
         }
         
         $type = $this->app->utils->arrays->get($parameters,'type');
-        $servers =  GmailServers::all(GmailServers::FETCH_ARRAY,['status = ? ',['Activated']],['id','server_name','main_ip','provider_name'],'naturalsort(server_name)','ASC') ;
+        $servers =  GmailServers::all(GmailServers::FETCH_ARRAY,['status = ? ',['Activated']],['id','server_name','password as main_ip','provider_name'],'naturalsort(server_name)','ASC') ;
                  
             
         if(count($servers) > 0)

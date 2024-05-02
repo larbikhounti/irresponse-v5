@@ -1301,6 +1301,80 @@ var SendProcess = function()
                 }
             });
         });
+        $('.refresh-gmail-servers').on('click',function(e)
+        {
+            e.preventDefault();
+            
+            $('#servers').html("");
+            $('#available-vmtas').html("");
+            $('#selected-vmtas').html("");
+            $('#servers').change();
+            $('#available-vmtas').change();
+            $('#selected-vmtas').change();
+            
+            var type = $('#smtp-mta-switcher').bootstrapSwitch('state') == true ? 'mta' : 'smtp';
+
+            iResponse.blockUI();
+            
+            var data = 
+            { 
+                'controller' : 'GProduction',
+                'action' : 'getServers',
+                'parameters' : 
+                {
+                    'type' : type
+                }
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: iResponse.getBaseURL() + '/api.json', 
+                data : data,
+                dataType : 'JSON',
+                async: SendProcess.async,
+                success:function(result) 
+                {
+                    
+                    if(result != false)
+                    {
+                        var status = result['status'];
+
+                        if(status == 200)
+                        {
+                            var servers = result['data']['servers'];
+                            for (var i in servers) 
+                            {
+                                if(type == 'smtp')
+                                {
+                                    console.log('smtp')
+
+                                    $('#servers').append("<option value='" + servers[i]['id'] + "'>" + servers[i]['server_name'] + "</option>");
+                                }
+                                else
+                                {
+                                    console.log('ips')
+                                    $('#servers').append("<option value='" + servers[i]['id'] + "' data-main-ip='" + servers[i]['server_name'] + "'>" + servers[i]['server_name'] + "</option>");
+                                }
+                            }
+                            
+                            $('#servers').change();
+                        }
+                        else
+                        {
+                            iResponse.alertBox({title: result['message'], type: "error", allowOutsideClick: "true", confirmButtonClass: "btn-danger"});
+                        }
+                    }
+                    
+                    iResponse.unblockUI();
+                },
+                error: function (jqXHR, textStatus, errorThrown) 
+                {
+                    iResponse.alertBox({title: textStatus + ' : ' + errorThrown, type: "error", allowOutsideClick: "true", confirmButtonClass: "btn-danger"});
+                    iResponse.unblockUI();
+                }
+            });
+        });
+        
         
         $('#isps,#vmta-send-type').on('change',function()
         {
