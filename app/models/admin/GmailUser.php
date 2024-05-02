@@ -103,6 +103,15 @@ class GmailUser extends ActiveRecord
      * @length 200
      */
     protected $_access_token;
+
+     /**
+     * @column
+     * @readwrite
+     * @type text
+     * @nullable true
+     * @length 200
+     */
+    protected $_refresh_token;
         
     /**
      * @column

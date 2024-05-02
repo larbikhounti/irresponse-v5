@@ -87,3 +87,5 @@
 [2024-05-02 00:56:47] iResponse Framework.CRITICAL: "Class 'IR\App\Webservices\GmailServers' not found" in : /usr/irresponse/app/webservices/GProduction.php at line : 93 [] []
 [2024-05-02 00:57:52] iResponse Framework.CRITICAL: "Class 'IR\App\Webservices\GmailServers' not found" in : /usr/irresponse/app/webservices/GProduction.php at line : 94 [] []
 [2024-05-02 00:58:50] iResponse Framework.CRITICAL: "SQLSTATE[42703]: Undefined column: 7 ERROR: column "main_ip" does not exist LINE 1: SELECT id,server_name,main_ip,provider_name FROM admin.gmail... ^" in : /usr/irresponse/framework/orm/Connector.php at line : 200 [] []
+[2024-05-02 01:25:57] iResponse Framework.CRITICAL: "Undefined variable: data" in : /usr/irresponse/app/controllers/GProduction.php at line : 1001 [] []
+[2024-05-02 01:32:20] iResponse Framework.CRITICAL: "Call to undefined function IR\App\Controllers\dies()" in : /usr/irresponse/app/controllers/GProduction.php at line : 1013 [] []

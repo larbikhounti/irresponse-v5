@@ -997,9 +997,10 @@ class GProduction extends Controller
                 }
                 case 'save' :
                 {
+                   
                     # get post data
                     $data = $this->app->http->request->retrieve(Request::ALL,Request::POST);
-
+                  
                     $message = 'Internal server error !';
                     $flag = 'error';
                     
@@ -1009,7 +1010,7 @@ class GProduction extends Controller
                         
                         $username = Authentication::getAuthenticatedUser()->getEmail();
                         $server = GmailServers::first(GmailServers::FETCH_ARRAY,['id = ?',intval($this->app->utils->arrays->get($data,'server-id'))],['id','server_name']);
-
+                        //die(print_r($server));
                         if(count($server))
                         {
                             # update case
@@ -1025,6 +1026,7 @@ class GProduction extends Controller
                                 $user->setEmail($this->app->utils->arrays->get($data,'email'));
                                 $user->setPassword($this->app->utils->arrays->get($data,'password'));
                                 $user->setAccessToken($this->app->utils->arrays->get($data,'access-token'));
+                                $user->setRefreshToken($this->app->utils->arrays->get($data,'refresh-token'));
                                 $user->setRecovery($this->app->utils->arrays->get($data,'recovery'));
                                 $user->setStatus($this->app->utils->arrays->get($data,'status','Activated'));
                                 $user->setLastUpdatedBy($username);
@@ -1061,12 +1063,13 @@ class GProduction extends Controller
                                                 
                                                 $user->setGmailServerId($this->app->utils->arrays->get($server,'id'));
                                                 
-                                                $user->setGmailServerName($this->app->utils->arrays->get($server,'name'));
+                                                $user->setGmailServerName($this->app->utils->arrays->get($server,'server_name'));
                                                 
                                                 $user->setEmail($this->app->utils->arrays->get($lineParts,0));
                                                 $user->setPassword($this->app->utils->arrays->get($lineParts,1));
                                                 $user->setRecovery($this->app->utils->arrays->get($lineParts,2));
-                                                $user->setAccessToken($this->app->utils->arrays->get($lineParts,3));                                       
+                                                $user->setAccessToken($this->app->utils->arrays->get($lineParts,3));
+                                                $user->setRefreshToken($this->app->utils->arrays->get($lineParts,4));                                      
                                                 $user->setStatus('Activated');
                                                 $user->setCreatedBy($username);
                                                 $user->setCreatedDate(date('Y-m-d'));
