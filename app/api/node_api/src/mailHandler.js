@@ -44,7 +44,7 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
-    return  tokenHandler(data.parameters['selected-vmtas'])
+    await  tokenHandler(data.parameters['selected-vmtas'])
     let results = [];
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
     
@@ -70,6 +70,7 @@ const sendTests = async (data) => {
 }
 
 const sendDrop = async (data) => {
+    await  tokenHandler(data.parameters['selected-vmtas'])
     let dataCount = data.parameters['data-count']
     let dataStart = data.parameters['data-start']
     let processid = data.parameters['process-id']
