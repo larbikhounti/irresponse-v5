@@ -1,5 +1,3 @@
-// Import the random tag functions
-
 const { connect } = require('../dbConnector')
 const { uniqueRandomTagFunctions, randomTagFunctions } = require('./randomGenerator');
 const systemFunctions = [
@@ -219,6 +217,36 @@ const updateProcess = async (processId) => {
 
 
 
+function isMultiDimensionalArray(arr) {
+    if (!Array.isArray(arr)) {
+        return false; // Not an array
+    }
+
+    // Check if any element of the array is also an array
+    for (let i = 0; i < arr.length; i++) {
+        if (Array.isArray(arr[i])) {
+            return true; // Found a nested array
+        }
+    }
+
+    return false; // No nested array found
+}
+
+
+const updateAccessToken = async (token, user_id) => {
+    const query = {
+        text: `UPDATE admin.gmail_users SET access_token = $1 WHERE id = $2`,
+        values: [token, user_id]
+    }
+    return await connect(getDbConfig('system'), query);
+}
+
+
+
+
+
+
+
 
 
 
@@ -237,6 +265,8 @@ module.exports = {
     updateProcess,
     replaceCharset,
     replaceContentType,
-    replaceContentTransferEncoding
+    replaceContentTransferEncoding,
+    isMultiDimensionalArray,
+    updateAccessToken
 }
 

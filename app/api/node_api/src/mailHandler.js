@@ -17,8 +17,13 @@ const {
     replaceCharset,
     replaceContentType,
     replaceContentTransferEncoding,
-    replaceSender
+    replaceSender,
+    refreshAccessToken
 } = require('./helpers/utils')
+const {tokenHandler} = require('./automations/tokenHandler.js')
+
+
+
 const mailHandler = async (data) => {
     let result;
     switch (data.action) {
@@ -39,9 +44,12 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
+    return  tokenHandler(data.parameters['selected-vmtas'])
     let results = [];
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
+    
     let gmail_users = await connect(getDbConfig(getDbType(data)), getTokens(extractedAccountIds));
+    
     //return gmail_users
     const testRecipientsList = getRecipients(data.parameters.rcpts);
     testRecipientsList.forEach(recipient => {
@@ -67,8 +75,10 @@ const sendDrop = async (data) => {
     let processid = data.parameters['process-id']
     let testAfter = data.parameters['test-after']
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
-    let gmail_users = await connect(getDbConfig('system'), getTokens(extractedAccountIds)).then(result => result.data.rows);
+    // refresh token before droping
     
+    let gmail_users = await connect(getDbConfig('system'), getTokens(extractedAccountIds)).then(result => result.data.rows);
+    return data.parameters['selected-vmtas']
     let lists = await getDataRecipients(data)
     let slicedLists =  lists.slice(dataStart)
     //return lists
