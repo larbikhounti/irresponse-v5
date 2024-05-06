@@ -32,7 +32,7 @@ const tokenHandler = async (selectedInboxes) => {
             refresh(data[i]['client_secret'],data[i]['refresh_token'],data[i]['client_id'],data[i]['id'])
         }
     }
-    return data
+   
 
  
 }

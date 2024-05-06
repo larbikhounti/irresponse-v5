@@ -78,7 +78,7 @@ const replaceContentTransferEncoding = (header, contentEncoding) => {
 
 const replaceSender = (header, sender) => {
     const senderRegex = /\[sender\]/g;
-    return JSON.parse(JSON.stringify(header).replace(senderRegex, sender));
+    return  Promise.resolve(JSON.parse(JSON.stringify(header).replace(senderRegex, sender))) ;
 }
 
 // Function to replace tags in text with corresponding random tags

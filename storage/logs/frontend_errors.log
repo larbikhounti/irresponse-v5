@@ -89,3 +89,4 @@
 [2024-05-02 00:58:50] iResponse Framework.CRITICAL: "SQLSTATE[42703]: Undefined column: 7 ERROR: column "main_ip" does not exist LINE 1: SELECT id,server_name,main_ip,provider_name FROM admin.gmail... ^" in : /usr/irresponse/framework/orm/Connector.php at line : 200 [] []
 [2024-05-02 01:25:57] iResponse Framework.CRITICAL: "Undefined variable: data" in : /usr/irresponse/app/controllers/GProduction.php at line : 1001 [] []
 [2024-05-02 01:32:20] iResponse Framework.CRITICAL: "Call to undefined function IR\App\Controllers\dies()" in : /usr/irresponse/app/controllers/GProduction.php at line : 1013 [] []
+[2024-05-06 07:28:57] iResponse Framework.CRITICAL: "Undefined index: id" in : /usr/irresponse/framework/templating/Template.php(49) : runtime-created function at line : 19 [] []

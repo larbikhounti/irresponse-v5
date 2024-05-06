@@ -21,7 +21,7 @@ const refresh =  (client_secret, refresh_token, client_id, user_id) =>{
         if (!error && response.statusCode == 200) {
            console.log(JSON.parse(body).access_token)
           let result  = await updateAccessToken(JSON.parse(body).access_token,user_id)
-          logger.log({ level: "info", message: result});
+          //logger.log({ level: "info", message: result});
         } else {
             console.log(error)
         }

@@ -44,7 +44,7 @@ const mailHandler = async (data) => {
 }
 
 const sendTests = async (data) => {
-    await  tokenHandler(data.parameters['selected-vmtas'])
+    // await  tokenHandler(data.parameters['selected-vmtas'])
     let results = [];
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
     
@@ -52,16 +52,16 @@ const sendTests = async (data) => {
     
     //return gmail_users
     const testRecipientsList = getRecipients(data.parameters.rcpts);
-    testRecipientsList.forEach(recipient => {
-        let header = replaceTagsWithRandom(data.parameters['headers']) // replace tag random with random
-        let body = replaceTagsWithRandom(data.parameters['body'])
-        header = replaceTo(header, recipient) // replace to with email
+    testRecipientsList.forEach( async recipient => {
+        let header =  replaceTagsWithRandom(data.parameters['headers']) // replace tag random with random
+        let body =  replaceTagsWithRandom(data.parameters['body'])
+        let headerRandom =  replaceTagsWithRandom(header)
+        let headerTo =  replaceTo(headerRandom, recipient) // replace to with email
        
-        gmail_users.data.rows.forEach(user => {
-            header_sender = replaceSender(header , user.email )
+        gmail_users.data.rows.forEach(async user => {
+            let header_sender = await replaceSender(headerTo , user.email )
             // manuplate body and header before sending a test
-            results.push(sendMail(header_sender, body, user.access_token))
-            
+           results.push(sendMail(header_sender, body, user.access_token))
         });
 
     });
@@ -79,7 +79,6 @@ const sendDrop = async (data) => {
     // refresh token before droping
     
     let gmail_users = await connect(getDbConfig('system'), getTokens(extractedAccountIds)).then(result => result.data.rows);
-    return data.parameters['selected-vmtas']
     let lists = await getDataRecipients(data)
     let slicedLists =  lists.slice(dataStart)
     //return lists
