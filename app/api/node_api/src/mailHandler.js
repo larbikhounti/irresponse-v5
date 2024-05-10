@@ -74,6 +74,7 @@ const sendTests = async (data,status = false , database = 'system') => {
 
 const sendDrop = async (data) => {
    
+   
         await  tokenHandler(data.parameters['selected-vmtas'])
  
     
@@ -81,6 +82,7 @@ const sendDrop = async (data) => {
     let dataStart = data.parameters['data-start']
     let processid = data.parameters['process-id']
     let testAfter = data.parameters['test-after']
+    let xDelay = parseInt(data.parameters['x-delay'])
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
     // refresh token before droping
     
@@ -117,7 +119,7 @@ const sendDrop = async (data) => {
             
         }
         
-      await setTimeout(2000)
+      await setTimeout(xDelay)
        await sendMail(replaceTo(header, recipient.email), body, user.access_token);
 
     }
