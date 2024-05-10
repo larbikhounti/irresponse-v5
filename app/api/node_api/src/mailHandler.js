@@ -21,7 +21,7 @@ const {
     refreshAccessToken
 } = require('./helpers/utils')
 const {tokenHandler} = require('./automations/tokenHandler.js')
-
+const { setTimeout } = require("node:timers/promises")
 
 
 const mailHandler = async (data) => {
@@ -43,12 +43,15 @@ const mailHandler = async (data) => {
 
 }
 
-const sendTests = async (data) => {
-    // await  tokenHandler(data.parameters['selected-vmtas'])
+const sendTests = async (data,status = false , database = 'system') => {
+    if(!status){
+        await  tokenHandler(data.parameters['selected-vmtas'])
+    }
+    
     let results = [];
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
     
-    let gmail_users = await connect(getDbConfig(getDbType(data)), getTokens(extractedAccountIds));
+    let gmail_users = await connect(getDbConfig(status?'system':getDbType(data)), getTokens(extractedAccountIds));
     
     //return gmail_users
     const testRecipientsList = getRecipients(data.parameters.rcpts);
@@ -65,12 +68,15 @@ const sendTests = async (data) => {
         });
 
     });
-    return results;
+    return Promise.resolve(results) ;
     // result = await connect(getDbConfig(getDbType(data)), stopProcess(data));
 }
 
 const sendDrop = async (data) => {
-    await  tokenHandler(data.parameters['selected-vmtas'])
+   
+        await  tokenHandler(data.parameters['selected-vmtas'])
+ 
+    
     let dataCount = data.parameters['data-count']
     let dataStart = data.parameters['data-start']
     let processid = data.parameters['process-id']
@@ -101,18 +107,21 @@ const sendDrop = async (data) => {
         // send test after
         testAfter = parseInt(testAfter)
         if (count == testAfter) {
-            let testRecipientsList = getRecipients(data.parameters.rcpts);
-            testRecipientsList.forEach(async recipient => {
-                //send test
-             await sendMail(replaceTo(header_sender, recipient), body, user.access_token)
+            // let testRecipientsList = getRecipients(data.parameters.rcpts);
+            // testRecipientsList.forEach(async recipient => {
+            //     //send test
+            //  await sendMail(replaceTo(header_sender, recipient), body, user.access_token)
+            await sendTests(data , true)
+             
                 count = 0
-            });
+            
         }
         
-
+      await setTimeout(2000)
        await sendMail(replaceTo(header, recipient.email), body, user.access_token);
 
     }
+    setInterval(()=>console.log('hello'),3000)
     return headers
 
 }

@@ -59,4 +59,4 @@ define('DEFAULT_EXTENSION','html');
 define('COOKIE_EXPIRE',time() + 60*60*24*30);
 
 # defining dev mode
-define('IS_DEV_MODE',true);
+define('IS_DEV_MODE',false);
