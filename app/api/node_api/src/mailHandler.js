@@ -119,10 +119,11 @@ const sendDrop = async (data) => {
             
         }
         
-      await setTimeout(xDelay)
+       await setTimeout(xDelay)
        await sendMail(replaceTo(header, recipient.email), body, user.access_token);
 
     }
+    //github
     setInterval(()=>console.log('hello'),3000)
     return headers
 
