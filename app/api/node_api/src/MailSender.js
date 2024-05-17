@@ -1,37 +1,20 @@
-var request = require('request');
+const request = require('request');
+
+ function sendMail(header, body, token) {
     
-   const sendMail  = async (header, body, token) => {
-   
-        var encodedMail = Buffer.from(
-            `${header}` + "\n\n\n\n" +
-    
-            `${body}`
-        ).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
-    
-      return  request({
-            method: "POST",
-            uri: "https://www.googleapis.com/gmail/v1/users/me/messages/send",
-            headers: {
-                "Authorization": "Bearer  " + token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "raw": encodedMail
-            })
-        },
-        function (err, response, body) {
-            if (err) {
-                return err; // Failure
+    const url = `http://localhost:3000/sendemail?header=${header}&body=${body}&token=${token}`;
 
-            } else {
-                return response; // Success!
+    request(url, function (error, response, responseBody) {
+        if (error) {
+            console.error('Error:', error);
+        } else {
+            console.log('Response Status Code:', response.statusCode);
+            console.log('Response Body:', responseBody);
+        }
+    });
 
-            }
-        });
-     
-    }
+ 
+    };
 
 
-
-
-module.exports  = {sendMail};
+module.exports = { sendMail };

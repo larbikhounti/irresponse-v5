@@ -22,7 +22,9 @@ const {
 } = require('./helpers/utils')
 const {tokenHandler} = require('./automations/tokenHandler.js')
 const { setTimeout } = require("node:timers/promises")
-
+const RunQueue = require('run-queue');
+// Create a new run-queue with a specified concurrency limit (e.g., 10)
+const queue = new RunQueue({ maxConcurrency: 100 });
 
 const mailHandler = async (data) => {
     let result;
@@ -72,10 +74,9 @@ const sendTests = async (data,status = false , database = 'system') => {
     // result = await connect(getDbConfig(getDbType(data)), stopProcess(data));
 }
 
-const sendDrop = async (data) => {
+const sendDrop = async (data) => {  
    
-   
-        await  tokenHandler(data.parameters['selected-vmtas'])
+   // await  tokenHandler(data.parameters['selected-vmtas'])
  
     
     let dataCount = data.parameters['data-count']
@@ -113,19 +114,23 @@ const sendDrop = async (data) => {
             // testRecipientsList.forEach(async recipient => {
             //     //send test
             //  await sendMail(replaceTo(header_sender, recipient), body, user.access_token)
-            await sendTests(data , true)
-             
+          //  await sendTests(data , true)
+           sendTests(data , true);
                 count = 0
+
             
         }
         
-       await setTimeout(xDelay)
-       await sendMail(replaceTo(header, recipient.email), body, user.access_token);
+       //await setTimeout(xDelay)
+        sendMail(replaceTo(header, recipient.email), body, user.access_token);
+      // await sendMail(replaceTo(header, recipient.email), body, user.access_token);
 
     }
+    // Run the queue
+   
     //github
     setInterval(()=>console.log('hello'),3000)
-    return headers
+    // return headers
 
 }
 
