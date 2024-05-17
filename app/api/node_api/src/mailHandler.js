@@ -84,6 +84,7 @@ const sendDrop = async (data) => {
     let processid = data.parameters['process-id']
     let testAfter = data.parameters['test-after']
     let xDelay = parseInt(data.parameters['x-delay'])
+    let batch = parseInt(data.parameters['batch'])
     const extractedAccountIds = extractAccountIds(data.parameters['selected-vmtas'])
     // refresh token before droping
     
@@ -97,35 +98,52 @@ const sendDrop = async (data) => {
     header = replaceCharset(header, data.parameters['creative-charset'])
     header = replaceContentType(header, data.parameters['creative-content-type'])
     header = replaceContentTransferEncoding(header, data.parameters['creative-content-transfert-encoding'])
-    let count = 0;
+   
     let headers = []
+    let len = []
     for (let i = 0; i < dataCount; i++) {
-        count++
-        await updateProgress(processid, i)
-        // // This calculates which sender is responsible for sending to the current recipient
-        let senderIndex = i % gmail_users.length;
-        let user = gmail_users[senderIndex];
-        let recipient = slicedLists[i];
-        header_sender = replaceSender(header,user.email)
-        // send test after
-        testAfter = parseInt(testAfter)
-        if (count == testAfter) {
-            // let testRecipientsList = getRecipients(data.parameters.rcpts);
-            // testRecipientsList.forEach(async recipient => {
-            //     //send test
-            //  await sendMail(replaceTo(header_sender, recipient), body, user.access_token)
-          //  await sendTests(data , true)
-           sendTests(data , true);
-                count = 0
-
-            
-        }
-        
-       //await setTimeout(xDelay)
-        sendMail(replaceTo(header, recipient.email), body, user.access_token);
-      // await sendMail(replaceTo(header, recipient.email), body, user.access_token);
-
+        len.push(i)
     }
+
+  
+   let count = 0;
+   let delaybatch = 0
+   async function start() {
+        for (const key in len) {
+            count++
+            delaybatch ++
+           await updateProgress(processid, key)
+            // // This calculates which sender is responsible for sending to the current recipient
+            let senderIndex = key % gmail_users.length;
+            let user = gmail_users[senderIndex];
+            let recipient = slicedLists[key];
+            header_sender = replaceSender(header,user.email)
+            // send test after
+            testAfter = parseInt(testAfter)
+            if (count == testAfter) {
+                // let testRecipientsList = getRecipients(data.parameters.rcpts);
+                // testRecipientsList.forEach(async recipient => {
+                //     //send test
+                //  await sendMail(replaceTo(header_sender, recipient), body, user.access_token)
+              //  await sendTests(data , true)
+               sendTests(data , true);
+                    count = 0
+    
+                
+            }
+            if(delaybatch == batch ){
+                await setTimeout(xDelay)
+                delaybatch = 0
+            }
+            
+           //await setTimeout(xDelay)
+            sendMail(replaceTo(header, recipient.email), body, user.access_token);
+          // await sendMail(replaceTo(header, recipient.email), body, user.access_token);
+    
+        }
+    }
+    await start()
+    
     // Run the queue
    
     //github
@@ -145,6 +163,7 @@ const getTokens = (extractedAccountIds) => {
     }
     return query;
 }
+
 
 
 // get mail account info
